@@ -1,0 +1,44 @@
+---------------------
+Use Case: submitScore
+
+1. Accept score
+ScoreSubmission {
+    playerId: string (generated uuid)
+    username: string (generated)
+    teamId: integer
+    currentScore: integer
+}
+2. Persist score
+3. Calculate Achievement (decision table)
+4. Call Vert.X REST api (temp: achievement service PUT /achievement/{uuid}/{achievement})
+5. Return http/200
+
+-------------------------
+Use Case: broadcastScores
+
+1. rule timer triggers (how often?)
+2. broadcast all (4) team scores and top scorers (how many?)
+ScoreSummary {
+    score: [
+        {teamId: 1, score: ####},
+        {teamId: 2, score: ####},
+        {teamId: 3, score: ####},
+        {teamId: 4, score: ####}
+    ],
+    topScores: [
+        {username: string, score: ####},
+        ...
+    ]
+}
+
+-------------------
+Use Case: setStatus
+
+1. Accept status change event (Status: ONSTAGE, OPEN, FINALISE)
+2. process per google doc
+3. return as in getStatus (below)
+
+-------------------
+Use Case: getStatus
+
+1. Return game status

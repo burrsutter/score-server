@@ -1,2 +1,2 @@
 # score-server
-The score server microservice
+The score aggregation microservice
