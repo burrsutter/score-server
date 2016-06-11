@@ -8,6 +8,7 @@
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
         <class>com.redhatkeynote.score.Game</class>
         <class>com.redhatkeynote.score.Player</class>
+        <class>com.redhatkeynote.score.Achievement</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="hibernate.connection.driver_class" value="org.h2.Driver"/>

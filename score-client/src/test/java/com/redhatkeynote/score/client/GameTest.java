@@ -1,5 +1,6 @@
 package com.redhatkeynote.score.client;
 
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -10,17 +11,17 @@ import com.redhatkeynote.score.Player;
 
 public class GameTest {
 
-    // team #, player #, player score
+    // team #, player #, player score, pops
     private static int[][] SCORES = new int[][] {
-        new int[] {1, 1,   10},
-        new int[] {2, 1,  100},
-        new int[] {3, 1,   50},
-        new int[] {4, 1,  500},
-        new int[] {3, 1,  100},
-        new int[] {3, 1,  800},
-        new int[] {1, 1, 1000},
-        new int[] {2, 2,  700},
-        new int[] {4, 2, 1000},
+        new int[] {1, 1,   10, 3},
+        new int[] {2, 1,  100, 3},
+        new int[] {3, 1,   50, 3},
+        new int[] {4, 1,  500, 3},
+        new int[] {3, 1,  100, 3},
+        new int[] {3, 1,  800, 3},
+        new int[] {1, 1, 1000, 3},
+        new int[] {2, 2,  700, 3},
+        new int[] {4, 2, 1000, 3},
     };
 
     private static KieSession session = null;
@@ -49,9 +50,10 @@ public class GameTest {
             Integer team = s[0];
             Integer player = s[1];
             Integer score = s[2];
+            Integer pops = s[3];
             String uuid = String.format("uuid-%s_%s", team, player);
             String username = String.format("Team%s_Player%s", team, player);
-            session.insert(new Player(uuid, username, team, score));
+            session.insert(new Player(uuid, username, team, score, pops ));
             Thread.sleep(1000);
         }
         Thread.sleep(2000);

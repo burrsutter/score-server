@@ -6,7 +6,7 @@
     <groupId>com.redhatkeynote</groupId>
     <artifactId>score</artifactId>
     <version>1.0.0</version>
-    <packaging>jar</packaging>
+    <packaging>kjar</packaging>
 
     <name>Red Hat Middleware Keynote: Score Microservice</name>
     <description>Red Hat Middleware Keynote: Score Microservice</description>
@@ -48,6 +48,18 @@
             <version>6.4.0.Final</version>
         </dependency>
         <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-workbench-models-guided-dtable</artifactId>
+            <scope>provided</scope>
+            <version>6.4.0.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-workbench-models-commons</artifactId>
+            <scope>provided</scope>
+            <version>6.4.0.Final</version>
+        </dependency>
+        <dependency>
             <groupId>org.hibernate.javax.persistence</groupId>
             <artifactId>hibernate-jpa-2.0-api</artifactId>
             <scope>provided</scope>
@@ -70,6 +82,12 @@
             <artifactId>slf4j-simple</artifactId>
             <optional>true</optional>
             <version>1.7.2</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -103,5 +121,16 @@
             </snapshots>
         </repository>
     </repositories>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.kie</groupId>
+                <artifactId>kie-maven-plugin</artifactId>
+                <version>6.4.0.Final</version>
+                <extensions>true</extensions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

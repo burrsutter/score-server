@@ -1,5 +1,7 @@
 package com.redhatkeynote.score;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -63,35 +65,41 @@ public final class ScoreServer {
         return this;
     }
 
-    // TODO: respect game status
-    public Player savePlayer(Player p) {
-        String uuid = p != null ? p.getUuid() : null;
-        if (uuid == null) {
-            throw new IllegalArgumentException("unidentified player");
-        }
-        return new Transaction<Player>(entityManager) {
-            @Override
-            public Player call() throws Exception {
-                TypedQuery<Player> query = em().createQuery("from Player p where p.uuid = :uuid", Player.class);
-                query.setParameter("uuid", uuid);
-                Player player;
-                try {
-                    player = query.getSingleResult();
-                    if (p.getUsername() != null) player.setUsername(p.getUsername());
-                    if (p.getTeam() != null) player.setTeam(p.getTeam());
-                    if (p.getScore() != null) player.setScore(p.getScore());
-                    em().merge(player);
-                } catch (NoResultException e) {
-                    player = p;
-                    em().persist(player);
-                }
-                return player;
-            }
-        }.transact();
+    public List<Achievement> loadAchievements() {
+        // loads and returns the list of available achievements from the database
+        return Arrays.asList( Achievement.ACHIEVEMENTS );
     }
 
-    public void reportAchievement(Achiever a) {
-        LOGGER.info(String.format("http://achievement/api/%s/%s", a.getUuid(), a.getAchievement()));
+    // TODO: respect game status
+    public Player savePlayer(Player p) {
+//        String uuid = p != null ? p.getUuid() : null;
+//        if (uuid == null) {
+//            throw new IllegalArgumentException("unidentified player");
+//        }
+//        return new Transaction<Player>(entityManager) {
+//            @Override
+//            public Player call() throws Exception {
+//                TypedQuery<Player> query = em().createQuery("from Player p where p.uuid = :uuid", Player.class);
+//                query.setParameter("uuid", uuid);
+//                Player player;
+//                try {
+//                    player = query.getSingleResult();
+//                    if (p.getUsername() != null) player.setUsername(p.getUsername());
+//                    if (p.getTeam() != null) player.setTeam(p.getTeam());
+//                    if (p.getScore() != null) player.setScore(p.getScore());
+//                    em().merge(player);
+//                } catch (NoResultException e) {
+//                    player = p;
+//                    em().persist(player);
+//                }
+//                return player;
+//            }
+//        }.transact();
+        return p;
+    }
+
+    public void reportAchievement(Player p, Achievement a) {
+        LOGGER.info(String.format( "http://achievement/api/%s/%s", p.getUuid(), a.getType() ));
     }
 
     public ScoreSummary getScoreSummary(int numTopPlayerScores) {
