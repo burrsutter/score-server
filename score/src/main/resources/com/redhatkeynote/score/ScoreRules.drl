@@ -9,10 +9,17 @@ rule "init game"
     then
         logger().info("init game");
         server().init(kcontext);
-        List<Achievement> achievements = server().loadAchievements();
-        for( Achievement a : achievements ) {
-            insert( a );
-        }
+end
+
+rule "process achievement"
+    when
+        ach    : Achievement() from server().loadAchievements()
+        pach   : PlayerAchievement( achievement == ach.getDesc() )
+        player : Player( uuid == pach.getUuid(), !hasAchievement(ach) )
+    then
+        logger().info("Processing player achievement: "+player.getUuid()+" -> "+ach.getDesc() );
+        player.addAchievement( ach );
+        server().reportAchievement( player, ach );
 end
 
 rule "submit player score"
@@ -22,34 +29,6 @@ rule "submit player score"
     then
         logger().info("submit player score");
         server().savePlayer(player);
-end
-
-rule "process achievement"
-    when
-        ach    : Achievement()
-        pach   : PlayerAchievement( achievement == ach.getDesc() )
-        player : Player( uuid == pach.getUuid(), !hasAchievement(ach) )
-    then
-        logger().info("Processing player achievement: "+player.getUuid()+" -> "+ach.getDesc() );
-        player.addAchievement( ach );
-        server().reportAchievement( player, ach );
-end
-
-rule "clean up achievement"
-        salience -10
-    when
-        p : Player()
-        a : PlayerAchievement( uuid == p.getUuid() )
-    then
-        retract(a);
-end
-
-rule "clean up player"
-        salience -15
-    when
-        p : Player()
-    then
-        retract( p );
 end
 
 /*rule "broadcast scores"

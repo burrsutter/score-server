@@ -36,31 +36,35 @@ public final class ScoreServer {
     private EntityManager entityManager = null;
 
     public synchronized ScoreServer init(KieContext kcontext) {
-        if (entityManager == null) {
-            EntityManagerFactory emf;
-            final ClassLoader tccl = Thread.currentThread().getContextClassLoader();
-            try {
-                // https://issues.jboss.org/browse/DROOLS-1108
-                ClassLoader cl = ((InternalKnowledgeBase)kcontext.getKieRuntime().getKieBase()).getRootClassLoader();
-                Thread.currentThread().setContextClassLoader(cl);
-                emf = Persistence.createEntityManagerFactory("score");
-            } finally {
-                Thread.currentThread().setContextClassLoader(tccl);
-            }
-            entityManager = emf.createEntityManager();
-            new Transaction<Object>(entityManager) {
-                @Override
-                public Object call() throws Exception {
-                    TypedQuery<Long> query = em().createQuery("select count(g) from Game g", Long.class);
-                    query.setLockMode(LockModeType.PESSIMISTIC_WRITE);
-                    Long result = query.getSingleResult();
-                    if (result.intValue() == 0) {
-                        Game game = new Game(Status.CLOSED);
-                        em().persist(game);
-                    }
-                    return null;
+        try {
+            if (entityManager == null) {
+                EntityManagerFactory emf;
+                final ClassLoader tccl = Thread.currentThread().getContextClassLoader();
+                try {
+                    // https://issues.jboss.org/browse/DROOLS-1108
+                    ClassLoader cl = ((InternalKnowledgeBase)kcontext.getKieRuntime().getKieBase()).getRootClassLoader();
+                    Thread.currentThread().setContextClassLoader(cl);
+                    emf = Persistence.createEntityManagerFactory("score");
+                } finally {
+                    Thread.currentThread().setContextClassLoader(tccl);
                 }
-            }.transact();
+                entityManager = emf.createEntityManager();
+                new Transaction<Object>(entityManager) {
+                    @Override
+                    public Object call() throws Exception {
+                        TypedQuery<Long> query = em().createQuery("select count(g) from Game g", Long.class);
+                        query.setLockMode(LockModeType.PESSIMISTIC_WRITE);
+                        Long result = query.getSingleResult();
+                        if (result.intValue() == 0) {
+                            Game game = new Game(Status.CLOSED);
+                            em().persist(game);
+                        }
+                        return null;
+                    }
+                }.transact();
+            }
+        } catch( Throwable t ) {
+            LOGGER.error( "Error initializing the server:", t );
         }
         return this;
     }

@@ -24,46 +24,41 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.kie.api.KieServices;
-import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.StatelessKieSession;
 
 public class AchievementsTest {
 
-    private static KieSession session = null;
+    private static StatelessKieSession session = null;
 
     @BeforeClass
     public static void beforeClass() {
-        session = KieServices.Factory.get().getKieClasspathContainer().newKieSession();
+        session = KieServices.Factory.get().getKieClasspathContainer().newStatelessKieSession();
         session.addEventListener( new DebugAgendaEventListener() );
-        session.fireAllRules();
     }
 
     @AfterClass
     public static void afterClass() {
-        session.dispose();
     }
 
     @Test
     public void testScoreNoAchievement() {
-        Player p = new Player( "p1", "Player 1", 1, 10, 3);
-        session.insert( p );
-        session.fireAllRules();
+        Player p = new Player( "p1", "Player 1", 1, 10, 3 );
+        session.execute( p );
         Assert.assertTrue( p.getAchievements().isEmpty() );
     }
 
     @Test
     public void testScoreApprenticeAchievement() {
-        Player p = new Player( "p1", "Player 1", 1, 60, 3);
-        session.insert( p );
-        session.fireAllRules();
+        Player p = new Player( "p1", "Player 1", 1, 60, 3 );
+        session.execute( p );
         Assert.assertEquals( 1, p.getAchievements().size() );
         Assert.assertTrue( p.hasAchievement( Achievement.ACHIEVEMENTS[0] ) );
     }
 
     @Test
     public void testScoreExpertAchievement() {
-        Player p = new Player( "p1", "Player 1", 1, 160, 3);
-        session.insert( p );
-        session.fireAllRules();
+        Player p = new Player( "p1", "Player 1", 1, 160, 3 );
+        session.execute( p );
         Assert.assertEquals( 2, p.getAchievements().size() );
         Assert.assertTrue( p.hasAchievement( Achievement.ACHIEVEMENTS[0] ) );
         Assert.assertTrue( p.hasAchievement( Achievement.ACHIEVEMENTS[1] ) );
@@ -72,8 +67,7 @@ public class AchievementsTest {
     @Test
     public void testScoreMasterAchievement() {
         Player p = new Player( "p1", "Player 1", 1, 360, 3);
-        session.insert( p );
-        session.fireAllRules();
+        session.execute( p );
         Assert.assertEquals( 3, p.getAchievements().size() );
         Assert.assertTrue( p.hasAchievement( Achievement.ACHIEVEMENTS[0] ) );
         Assert.assertTrue( p.hasAchievement( Achievement.ACHIEVEMENTS[1] ) );
@@ -83,8 +77,7 @@ public class AchievementsTest {
     @Test
     public void testScoreApprenticePopper() {
         Player p = new Player( "p1", "Player 1", 1, 10, 5);
-        session.insert( p );
-        session.fireAllRules();
+        session.execute( p );
         Assert.assertEquals( 1, p.getAchievements().size() );
         Assert.assertTrue( p.hasAchievement( Achievement.ACHIEVEMENTS[3] ) );
     }
@@ -92,8 +85,7 @@ public class AchievementsTest {
     @Test
     public void testScoreExpertPopper() {
         Player p = new Player( "p1", "Player 1", 1, 10, 12);
-        session.insert( p );
-        session.fireAllRules();
+        session.execute( p );
         Assert.assertEquals( 2, p.getAchievements().size() );
         Assert.assertTrue( p.hasAchievement( Achievement.ACHIEVEMENTS[3] ) );
         Assert.assertTrue( p.hasAchievement( Achievement.ACHIEVEMENTS[4] ) );
@@ -102,8 +94,7 @@ public class AchievementsTest {
     @Test
     public void testScoreMasterPopper() {
         Player p = new Player( "p1", "Player 1", 1, 10, 15);
-        session.insert( p );
-        session.fireAllRules();
+        session.execute( p );
         Assert.assertEquals( 3, p.getAchievements().size() );
         Assert.assertTrue( p.hasAchievement( Achievement.ACHIEVEMENTS[3] ) );
         Assert.assertTrue( p.hasAchievement( Achievement.ACHIEVEMENTS[4] ) );
