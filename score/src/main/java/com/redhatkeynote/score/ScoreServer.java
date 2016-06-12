@@ -18,12 +18,14 @@ import org.kie.server.api.marshalling.MarshallerFactory;
 import org.kie.server.api.marshalling.MarshallingFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.security.provider.MD5;
 
 public final class ScoreServer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ScoreServer.class);
+    private static final Logger      LOGGER = LoggerFactory.getLogger( ScoreServer.class );
     private static final ScoreServer SERVER = new ScoreServer();
-    private static final Marshaller JSON_MARSHALLER = MarshallerFactory.getMarshaller(MarshallingFormat.JSON, ScoreServer.class.getClassLoader());
+    private static final Marshaller JSON_MARSHALLER = MarshallerFactory.getMarshaller( MarshallingFormat.JSON, ScoreServer.class.getClassLoader() );
+    private List<Achievement> achievements;
 
     public static final Logger logger() {
         return LOGGER;
@@ -35,15 +37,19 @@ public final class ScoreServer {
 
     private EntityManager entityManager = null;
 
+    public ScoreServer() {
+        achievements = new ArrayList<Achievement>( Arrays.asList( Achievement.ACHIEVEMENTS ) );
+    }
+
     public synchronized ScoreServer init(KieContext kcontext) {
         try {
-            if (entityManager == null) {
+            if ( entityManager == null ) {
                 EntityManagerFactory emf;
                 final ClassLoader tccl = Thread.currentThread().getContextClassLoader();
                 try {
                     // https://issues.jboss.org/browse/DROOLS-1108
-                    ClassLoader cl = ((InternalKnowledgeBase)kcontext.getKieRuntime().getKieBase()).getRootClassLoader();
-                    Thread.currentThread().setContextClassLoader(cl);
+                    ClassLoader cl = ((InternalKnowledgeBase) kcontext.getKieRuntime().getKieBase()).getRootClassLoader();
+                    Thread.currentThread().setContextClassLoader( cl );
                     emf = Persistence.createEntityManagerFactory("score");
                 } finally {
                     Thread.currentThread().setContextClassLoader(tccl);
@@ -71,7 +77,14 @@ public final class ScoreServer {
 
     public List<Achievement> loadAchievements() {
         // loads and returns the list of available achievements from the database
-        return Arrays.asList( Achievement.ACHIEVEMENTS );
+        return achievements;
+    }
+
+    public void createAchievement( String desc ) {
+        // we need to make sure the achievement type below is unique. This
+        // is just a dummy implementation for now
+        Achievement a = new Achievement( desc.substring( 0, 7 ), desc );
+        achievements.add( a );
     }
 
     // TODO: respect game status

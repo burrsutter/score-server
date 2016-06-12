@@ -11,11 +11,22 @@ rule "init game"
         server().init(kcontext);
 end
 
-rule "process achievement"
+rule "Create achievement if it does not exist"
+        salience -3
     when
-        ach    : Achievement() from server().loadAchievements()
-        pach   : PlayerAchievement( achievement == ach.getDesc() )
-        player : Player( uuid == pach.getUuid(), !hasAchievement(ach) )
+        pach   : PlayerAchievement( )
+        not( Achievement( desc == pach.achievement ) from server().loadAchievements() )
+    then
+        server().createAchievement( pach.getAchievement() );
+        update( pach );
+end
+
+rule "process achievement"
+        salience -5
+    when
+        pach   : PlayerAchievement( )
+        ach    : Achievement( desc == pach.achievement ) from server().loadAchievements()
+        player : Player( uuid == pach.uuid, !hasAchievement(ach) )
     then
         logger().info("Processing player achievement: "+player.getUuid()+" -> "+ach.getDesc() );
         player.addAchievement( ach );
@@ -23,7 +34,7 @@ rule "process achievement"
 end
 
 rule "submit player score"
-        salience -5
+        salience -10
     when
         player : Player()
     then

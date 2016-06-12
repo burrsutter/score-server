@@ -18,6 +18,8 @@ package com.redhatkeynote.score.client;
 
 import com.redhatkeynote.score.Achievement;
 import com.redhatkeynote.score.Player;
+import com.redhatkeynote.score.PlayerAchievement;
+import com.redhatkeynote.score.ScoreServer;
 import org.drools.core.event.DebugAgendaEventListener;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -25,6 +27,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.StatelessKieSession;
+
+import java.util.List;
 
 public class AchievementsTest {
 
@@ -100,5 +104,17 @@ public class AchievementsTest {
         Assert.assertTrue( p.hasAchievement( Achievement.ACHIEVEMENTS[4] ) );
         Assert.assertTrue( p.hasAchievement( Achievement.ACHIEVEMENTS[5] ) );
     }
+
+    @Test
+    public void testCreateABrandNewAchievement() {
+        PlayerAchievement pa = new PlayerAchievement( "p1", "A brand new achievement" );
+        List<Achievement> achievements = ScoreServer.server().loadAchievements();
+        int size = achievements.size();
+        session.execute( pa );
+        Assert.assertEquals( size + 1, achievements.size() );
+        Achievement a = achievements.get( achievements.size()-1 );
+        Assert.assertEquals( pa.getAchievement(), a.getDesc() );
+    }
+
 
 }
