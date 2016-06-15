@@ -85,6 +85,11 @@ public final class ScoreServer {
         achievements.add( a );
     }
 
+    public Player loadPlayer( Player p ) {
+        // load from database and merge
+        return p;
+    }
+
     // TODO: respect game status
     public Player savePlayer(Player p) {
 //        String uuid = p != null ? p.getUuid() : null;

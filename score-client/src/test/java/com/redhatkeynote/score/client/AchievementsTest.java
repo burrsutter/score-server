@@ -120,6 +120,27 @@ public class AchievementsTest {
     }
 
     @Test
+    public void testScoreFlagNewAchievements() {
+        Player p = new Player( "p1", "Player 1", 1, 10, 15, false );
+        p.addAchievement( ACHIEVEMENTS[3] );
+        p.addAchievement( ACHIEVEMENTS[4] );
+        session.execute( p );
+        Assert.assertEquals( 3, p.getAchievements().size() );
+        Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[3] ) );
+        Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[4] ) );
+        Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[5] ) );
+        for( Achievement a : p.getAchievements() ) {
+            if( a.equals( ACHIEVEMENTS[3] ) ) {
+                Assert.assertFalse( a.isNewAchievement() );
+            } else if( a.equals( ACHIEVEMENTS[4] ) ) {
+                Assert.assertFalse( a.isNewAchievement() );
+            } else if( a.equals( ACHIEVEMENTS[5] ) ) {
+                Assert.assertTrue( a.isNewAchievement() );
+            }
+        }
+    }
+
+    @Test
     public void testScoreGoldenSnitch() {
         Player p = new Player( "p1", "Player 1", 1, 1, 1, true );
         session.execute( p );

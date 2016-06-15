@@ -5,10 +5,18 @@ import function com.redhatkeynote.score.ScoreServer.server
 import java.util.List
 
 rule "init game"
+        salience 100
     when
     then
         logger().info("init game");
         server().init(kcontext);
+end
+
+rule "load and merge player"
+    when
+        player : Player()
+    then
+        server().loadPlayer(player);
 end
 
 rule "Create achievement if it does not exist"
