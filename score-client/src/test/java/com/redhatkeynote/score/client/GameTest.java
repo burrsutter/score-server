@@ -46,7 +46,7 @@ public class GameTest {
             Integer pops = s[3];
             String uuid = String.format("uuid-%s_%s", team, player);
             String username = String.format("Team%s_Player%s", team, player);
-            session.execute( new Player( uuid, username, team, score, pops ) );
+            session.execute( new Player( uuid, username, team, score, pops, false ) );
         }
     }
 

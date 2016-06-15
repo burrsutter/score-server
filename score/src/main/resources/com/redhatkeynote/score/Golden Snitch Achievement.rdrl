@@ -1,0 +1,14 @@
+package com.redhatkeynote.score;
+
+import java.lang.Number;
+
+rule "Golden Snitch Achievement"
+	dialect "mvel"
+	when
+		player : Player( goldenSnitch == true )
+	then
+		PlayerAchievement fact0 = new PlayerAchievement();
+		fact0.setUuid( player.uuid );
+		fact0.setAchievement( "Golden Snitch" );
+		insert( fact0 );
+end

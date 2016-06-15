@@ -1,8 +1,6 @@
 package com.redhatkeynote.score;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -22,10 +20,10 @@ import sun.security.provider.MD5;
 
 public final class ScoreServer {
 
-    private static final Logger      LOGGER = LoggerFactory.getLogger( ScoreServer.class );
-    private static final ScoreServer SERVER = new ScoreServer();
-    private static final Marshaller JSON_MARSHALLER = MarshallerFactory.getMarshaller( MarshallingFormat.JSON, ScoreServer.class.getClassLoader() );
-    private List<Achievement> achievements;
+    private static final Logger      LOGGER          = LoggerFactory.getLogger( ScoreServer.class );
+    private static final ScoreServer SERVER          = new ScoreServer();
+    private static final Marshaller  JSON_MARSHALLER = MarshallerFactory.getMarshaller( MarshallingFormat.JSON, ScoreServer.class.getClassLoader() );
+    private Set<Achievement> achievements;
 
     public static final Logger logger() {
         return LOGGER;
@@ -38,7 +36,7 @@ public final class ScoreServer {
     private EntityManager entityManager = null;
 
     public ScoreServer() {
-        achievements = new ArrayList<Achievement>( Arrays.asList( Achievement.ACHIEVEMENTS ) );
+        achievements = new HashSet<Achievement>();
     }
 
     public synchronized ScoreServer init(KieContext kcontext) {
@@ -75,7 +73,7 @@ public final class ScoreServer {
         return this;
     }
 
-    public List<Achievement> loadAchievements() {
+    public Set<Achievement> loadAchievements() {
         // loads and returns the list of available achievements from the database
         return achievements;
     }

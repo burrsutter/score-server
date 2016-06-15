@@ -28,16 +28,30 @@ import org.junit.Test;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.StatelessKieSession;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 public class AchievementsTest {
 
     private static StatelessKieSession session = null;
 
+    public static Achievement[] ACHIEVEMENTS = new Achievement[]{
+            new Achievement( "SCR_APP", "Apprentice Scorer" ),
+            new Achievement( "SCR_EXP", "Expert Scorer" ),
+            new Achievement( "SCR_MAS", "Master Scorer" ),
+            new Achievement( "POP_APP", "Apprentice Popper" ),
+            new Achievement( "POP_EXP", "Expert Popper" ),
+            new Achievement( "POP_MAS", "Master Popper" ),
+            new Achievement( "GLD_SNT", "Golden Snitch" )
+    };
+
     @BeforeClass
     public static void beforeClass() {
         session = KieServices.Factory.get().getKieClasspathContainer().newStatelessKieSession();
         session.addEventListener( new DebugAgendaEventListener() );
+        // preloading achievements just to facilitate tests
+        ScoreServer.server().loadAchievements().addAll( Arrays.asList( ACHIEVEMENTS ) );
     }
 
     @AfterClass
@@ -46,74 +60,87 @@ public class AchievementsTest {
 
     @Test
     public void testScoreNoAchievement() {
-        Player p = new Player( "p1", "Player 1", 1, 10, 3 );
+        Player p = new Player( "p1", "Player 1", 1, 10, 3, false );
         session.execute( p );
         Assert.assertTrue( p.getAchievements().isEmpty() );
     }
 
     @Test
     public void testScoreApprenticeAchievement() {
-        Player p = new Player( "p1", "Player 1", 1, 60, 3 );
+        Player p = new Player( "p1", "Player 1", 1, 60, 3, false );
         session.execute( p );
         Assert.assertEquals( 1, p.getAchievements().size() );
-        Assert.assertTrue( p.hasAchievement( Achievement.ACHIEVEMENTS[0] ) );
+        Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[0] ) );
     }
 
     @Test
     public void testScoreExpertAchievement() {
-        Player p = new Player( "p1", "Player 1", 1, 160, 3 );
+        Player p = new Player( "p1", "Player 1", 1, 160, 3, false );
         session.execute( p );
         Assert.assertEquals( 2, p.getAchievements().size() );
-        Assert.assertTrue( p.hasAchievement( Achievement.ACHIEVEMENTS[0] ) );
-        Assert.assertTrue( p.hasAchievement( Achievement.ACHIEVEMENTS[1] ) );
+        Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[0] ) );
+        Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[1] ) );
     }
 
     @Test
     public void testScoreMasterAchievement() {
-        Player p = new Player( "p1", "Player 1", 1, 360, 3);
+        Player p = new Player( "p1", "Player 1", 1, 360, 3, false );
         session.execute( p );
         Assert.assertEquals( 3, p.getAchievements().size() );
-        Assert.assertTrue( p.hasAchievement( Achievement.ACHIEVEMENTS[0] ) );
-        Assert.assertTrue( p.hasAchievement( Achievement.ACHIEVEMENTS[1] ) );
-        Assert.assertTrue( p.hasAchievement( Achievement.ACHIEVEMENTS[2] ) );
+        Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[0] ) );
+        Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[1] ) );
+        Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[2] ) );
     }
 
     @Test
     public void testScoreApprenticePopper() {
-        Player p = new Player( "p1", "Player 1", 1, 10, 5);
+        Player p = new Player( "p1", "Player 1", 1, 10, 5, false );
         session.execute( p );
         Assert.assertEquals( 1, p.getAchievements().size() );
-        Assert.assertTrue( p.hasAchievement( Achievement.ACHIEVEMENTS[3] ) );
+        Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[3] ) );
     }
 
     @Test
     public void testScoreExpertPopper() {
-        Player p = new Player( "p1", "Player 1", 1, 10, 12);
+        Player p = new Player( "p1", "Player 1", 1, 10, 12, false );
         session.execute( p );
         Assert.assertEquals( 2, p.getAchievements().size() );
-        Assert.assertTrue( p.hasAchievement( Achievement.ACHIEVEMENTS[3] ) );
-        Assert.assertTrue( p.hasAchievement( Achievement.ACHIEVEMENTS[4] ) );
+        Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[3] ) );
+        Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[4] ) );
     }
 
     @Test
     public void testScoreMasterPopper() {
-        Player p = new Player( "p1", "Player 1", 1, 10, 15);
+        Player p = new Player( "p1", "Player 1", 1, 10, 15, false );
         session.execute( p );
         Assert.assertEquals( 3, p.getAchievements().size() );
-        Assert.assertTrue( p.hasAchievement( Achievement.ACHIEVEMENTS[3] ) );
-        Assert.assertTrue( p.hasAchievement( Achievement.ACHIEVEMENTS[4] ) );
-        Assert.assertTrue( p.hasAchievement( Achievement.ACHIEVEMENTS[5] ) );
+        Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[3] ) );
+        Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[4] ) );
+        Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[5] ) );
+    }
+
+    @Test
+    public void testScoreGoldenSnitch() {
+        Player p = new Player( "p1", "Player 1", 1, 1, 1, true );
+        session.execute( p );
+        Assert.assertEquals( 1, p.getAchievements().size() );
+        Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[6] ) );
     }
 
     @Test
     public void testCreateABrandNewAchievement() {
         PlayerAchievement pa = new PlayerAchievement( "p1", "A brand new achievement" );
-        List<Achievement> achievements = ScoreServer.server().loadAchievements();
+        Set<Achievement> achievements = ScoreServer.server().loadAchievements();
         int size = achievements.size();
         session.execute( pa );
         Assert.assertEquals( size + 1, achievements.size() );
-        Achievement a = achievements.get( achievements.size()-1 );
-        Assert.assertEquals( pa.getAchievement(), a.getDesc() );
+        boolean found = false;
+        for( Achievement a : achievements ) {
+            if( a.getDesc().equals( pa.getAchievement() ) ) {
+                found = true;
+            }
+        }
+        Assert.assertTrue( found );
     }
 
 

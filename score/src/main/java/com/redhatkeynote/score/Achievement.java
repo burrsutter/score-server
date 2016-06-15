@@ -23,16 +23,6 @@ import java.io.Serializable;
 @Table(name = "achievements")
 public class Achievement implements Serializable {
 
-    public static Achievement[] ACHIEVEMENTS = new Achievement[]{
-            new Achievement( "SCR_APP", "Apprentice Scorer" ),
-            new Achievement( "SCR_EXP", "Expert Scorer" ),
-            new Achievement( "SCR_MAS", "Master Scorer" ),
-            new Achievement( "POP_APP", "Apprentice Popper" ),
-            new Achievement( "POP_EXP", "Expert Popper" ),
-            new Achievement( "POP_MAS", "Master Popper" ),
-            new Achievement( "GLD_SNT", "Golden Snitch" )
-    };
-
     @Id
     @Column(name = "id")
     @GeneratedValue

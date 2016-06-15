@@ -42,10 +42,3 @@ rule "submit player score"
         server().savePlayer(player);
 end
 
-/*rule "broadcast scores"
-    timer ( int: 2s 2s )
-    when
-    then
-        logger().info("broadcast scores");
-        server().broadcastScores(10);
-end*/

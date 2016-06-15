@@ -31,18 +31,22 @@ public class Player implements Serializable {
     @Column(name = "pops")
     private Integer consecutivePops;
 
+    @Column(name = "goldenSnitch")
+    private boolean goldenSnitch;
+
     @OneToMany
     private List<Achievement> achievements = new ArrayList<Achievement>();
 
     public Player() {
     }
 
-    public Player(String uuid, String username, Integer team, Integer score, Integer consecutivePops ) {
+    public Player(String uuid, String username, Integer team, Integer score, Integer consecutivePops, boolean goldenSnitch ) {
         setUuid( uuid );
         setUsername( username );
         setTeam( team );
         setScore( score );
         setConsecutivePops( consecutivePops );
+        setGoldenSnitch( goldenSnitch );
     }
 
     public String getUuid() {
@@ -99,5 +103,13 @@ public class Player implements Serializable {
 
     public void setConsecutivePops(Integer consecutivePops) {
         this.consecutivePops = consecutivePops;
+    }
+
+    public boolean isGoldenSnitch() {
+        return goldenSnitch;
+    }
+
+    public void setGoldenSnitch(boolean goldenSnitch) {
+        this.goldenSnitch = goldenSnitch;
     }
 }
