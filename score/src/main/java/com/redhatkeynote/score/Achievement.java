@@ -21,7 +21,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "achievements")
-public class Achievement implements Serializable {
+public class Achievement implements Serializable, Cloneable {
 
     @Id
     @Column(name = "id")
@@ -34,12 +34,22 @@ public class Achievement implements Serializable {
     @Column(name="desc")
     private String desc;
 
+    @Transient
+    private boolean newAchievement;
+
     public Achievement() {
     }
 
     public Achievement(String type, String desc) {
         this.type = type;
         this.desc = desc;
+    }
+
+    public Achievement(Integer id, String type, String desc, boolean newAchievement) {
+        this.id = id;
+        this.type = type;
+        this.desc = desc;
+        this.newAchievement = newAchievement;
     }
 
     public String getType() {
@@ -56,6 +66,14 @@ public class Achievement implements Serializable {
 
     public void setDesc(String desc) {
         this.desc = desc;
+    }
+
+    public boolean isNewAchievement() {
+        return newAchievement;
+    }
+
+    public void setNewAchievement(boolean newAchievement) {
+        this.newAchievement = newAchievement;
     }
 
     @Override
@@ -80,5 +98,11 @@ public class Achievement implements Serializable {
     @Override
     public String toString() {
         return desc;
+    }
+
+    @Override
+    public Achievement clone()
+            throws CloneNotSupportedException {
+        return new Achievement( id, type, desc, newAchievement );
     }
 }

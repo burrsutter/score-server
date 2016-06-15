@@ -29,8 +29,9 @@ rule "process achievement"
         player : Player( uuid == pach.uuid, !hasAchievement(ach) )
     then
         logger().info("Processing player achievement: "+player.getUuid()+" -> "+ach.getDesc() );
-        player.addAchievement( ach );
-        server().reportAchievement( player, ach );
+        Achievement na = ach.clone();
+        na.setNewAchievement(true);
+        player.addAchievement( na );
 end
 
 rule "submit player score"

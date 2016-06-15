@@ -113,10 +113,6 @@ public final class ScoreServer {
         return p;
     }
 
-    public void reportAchievement(Player p, Achievement a) {
-        LOGGER.info(String.format( "http://achievement/api/%s/%s", p.getUuid(), a.getType() ));
-    }
-
     public ScoreSummary getScoreSummary( final ScoreSummary ss ) {
         final int limit = ss.getTopPlayers() < 0 ? 0 : ss.getTopPlayers();
         return new Transaction<ScoreSummary>(entityManager) {
