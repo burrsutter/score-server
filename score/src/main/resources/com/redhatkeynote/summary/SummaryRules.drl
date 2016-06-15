@@ -1,0 +1,11 @@
+package com.redhatkeynote.summary;
+
+import com.redhatkeynote.score.ScoreSummary
+import function com.redhatkeynote.score.ScoreServer.server
+
+rule "TeamRules"
+    when
+        $ss : ScoreSummary()
+    then
+        server().getScoreSummary( $ss );
+end

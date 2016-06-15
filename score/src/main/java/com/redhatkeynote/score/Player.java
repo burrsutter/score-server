@@ -22,7 +22,7 @@ public class Player implements Serializable {
     @Column(name = "username")//, unique=true)
     private String username;
 
-    @Column(name = "team")
+    @Column(name = "summary")
     private Integer team;
 
     @Column(name = "score")

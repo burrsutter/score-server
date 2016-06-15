@@ -1,9 +1,13 @@
 <kmodule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://jboss.org/kie/6.0.0/kmodule">
-    <kbase name="ScoreBase" default="true">
+    <kbase name="ScoreKBase" default="true" packages="com.redhatkeynote.score">
         <!-- the stateless session bellow is the session used by the demo -->
         <ksession name="ScoreSession" type="stateless" default="true"/>
 
         <!-- the stateful session bellow is not used, but it is required for compilation purposes -->
         <ksession name="dummy" type="stateful" default="true"/>
+    </kbase>
+
+    <kbase name="SummaryKBase" packages="com.redhatkeynote.summary">
+        <ksession name="SummarySession" type="stateless"/>
     </kbase>
 </kmodule>

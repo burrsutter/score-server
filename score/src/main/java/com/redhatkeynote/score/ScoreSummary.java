@@ -10,7 +10,13 @@ public class ScoreSummary implements Serializable {
     private SortedSet<TeamScore> teamScores = new TreeSet<TeamScore>();
     private SortedSet<PlayerScore> topPlayerScores = new TreeSet<PlayerScore>();
 
+    private int topPlayers;
+
     public ScoreSummary() {}
+
+    public ScoreSummary(int topPlayers) {
+        this.topPlayers = topPlayers;
+    }
 
     public SortedSet<TeamScore> getTeamScores() {
         return teamScores;
@@ -40,4 +46,11 @@ public class ScoreSummary implements Serializable {
         }
     }
 
+    public int getTopPlayers() {
+        return topPlayers;
+    }
+
+    public void setTopPlayers(int topPlayers) {
+        this.topPlayers = topPlayers;
+    }
 }

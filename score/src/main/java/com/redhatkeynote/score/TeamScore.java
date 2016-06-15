@@ -73,7 +73,7 @@ public class TeamScore implements Comparable<TeamScore>, Serializable {
         // descending
         int c = Integer.valueOf(thatScore).compareTo(thisScore);
         if (c == 0) {
-            // compare team second
+            // compare summary second
             Integer thisTeam = this.team != null ? this.team : 0;
             Integer thatTeam = that != null ? (that.team != null ? that.team : 0) : 0;
             c = thisTeam.compareTo(thatTeam);

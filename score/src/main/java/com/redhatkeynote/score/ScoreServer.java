@@ -119,15 +119,14 @@ public final class ScoreServer {
         LOGGER.info(String.format( "http://achievement/api/%s/%s", p.getUuid(), a.getType() ));
     }
 
-    public ScoreSummary getScoreSummary(int numTopPlayerScores) {
-        final int limit = numTopPlayerScores < 0 ? 0 : numTopPlayerScores;
+    public ScoreSummary getScoreSummary( final ScoreSummary ss ) {
+        final int limit = ss.getTopPlayers() < 0 ? 0 : ss.getTopPlayers();
         return new Transaction<ScoreSummary>(entityManager) {
             @Override
             public ScoreSummary call() throws Exception {
-                ScoreSummary ss = new ScoreSummary();
                 // TODO: collapse into one query
                 for (int t=1; t < 5; t++) {
-                    TypedQuery<TeamScore> query = em().createQuery("select new com.redhatkeynote.score.TeamScore(p.team, sum(p.score)) from Player p where p.team = :team group by p.team", TeamScore.class);
+                    TypedQuery<TeamScore> query = em().createQuery("select new com.redhatkeynote.score.TeamScore(p.summary, sum(p.score)) from Player p where p.summary = :summary group by p.summary", TeamScore.class);
                     query.setParameter("team", Integer.valueOf(t));
                     try {
                         TeamScore teamScore = query.getSingleResult();
@@ -148,7 +147,7 @@ public final class ScoreServer {
     }
 
     public void broadcastScores(int numTopPlayerScores) {
-        ScoreSummary ss = getScoreSummary(numTopPlayerScores);
+        ScoreSummary ss = getScoreSummary( new ScoreSummary( numTopPlayerScores ) );
         String json = JSON_MARSHALLER.marshall(ss);
         LOGGER.info(String.format("http://leaderboard/api?json=%s", json));
     }

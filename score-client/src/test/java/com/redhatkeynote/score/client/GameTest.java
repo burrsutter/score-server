@@ -12,7 +12,7 @@ import org.kie.api.runtime.StatelessKieSession;
 
 public class GameTest {
 
-    // team #, player #, player score, pops
+    // summary #, player #, player score, pops
     private static int[][] SCORES = new int[][]{
             new int[]{1, 1, 10, 3},
             new int[]{2, 1, 100, 3},
@@ -46,7 +46,7 @@ public class GameTest {
             Integer pops = s[3];
             String uuid = String.format("uuid-%s_%s", team, player);
             String username = String.format("Team%s_Player%s", team, player);
-            session.execute(new Player(uuid, username, team, score, pops ));
+            session.execute( new Player( uuid, username, team, score, pops ) );
         }
     }
 
