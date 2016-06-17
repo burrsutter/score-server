@@ -49,10 +49,11 @@ public final class ScoreServer {
                 new Transaction<Object>(entityManager) {
                     @Override
                     public Object call() throws Exception {
-                        TypedQuery<Long> query = em().createQuery("select count(g) from Game g", Long.class);
+                        TypedQuery<Game> query = em().createQuery("from Game g", Game.class);
                         query.setLockMode(LockModeType.PESSIMISTIC_WRITE);
-                        Long result = query.getSingleResult();
-                        if (result.intValue() == 0) {
+                        try {
+                            query.getSingleResult();
+                        } catch (NoResultException e) {
                             Game game = new Game(Status.CLOSED);
                             em().persist(game);
                         }
