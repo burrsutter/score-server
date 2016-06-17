@@ -78,7 +78,7 @@ public final class ScoreServer {
                 return query.getResultList();
             }
         }.transact();
-        final HashSet<Achievement> newSet = new HashSet<>(listOfAchievements);
+        final HashSet<Achievement> newSet = (listOfAchievements == null ? new HashSet<>() : new HashSet<>(listOfAchievements));
         if (achievements.compareAndSet(null, newSet)) {
             return newSet;
         } else {
