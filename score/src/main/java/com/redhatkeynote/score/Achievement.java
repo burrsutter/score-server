@@ -34,9 +34,6 @@ public class Achievement implements Serializable, Cloneable {
     @Column(name="description")
     private String description;
 
-    @Transient
-    private boolean newAchievement;
-
     public Achievement() {
     }
 
@@ -45,11 +42,10 @@ public class Achievement implements Serializable, Cloneable {
         this.description = description;
     }
 
-    public Achievement(Integer id, String type, String description, boolean newAchievement) {
+    public Achievement(Integer id, String type, String description) {
         this.id = id;
         this.type = type;
         this.description = description;
-        this.newAchievement = newAchievement;
     }
 
     public String getType() {
@@ -66,14 +62,6 @@ public class Achievement implements Serializable, Cloneable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public boolean isNewAchievement() {
-        return newAchievement;
-    }
-
-    public void setNewAchievement(boolean newAchievement) {
-        this.newAchievement = newAchievement;
     }
 
     @Override
@@ -103,6 +91,6 @@ public class Achievement implements Serializable, Cloneable {
     @Override
     public Achievement clone()
             throws CloneNotSupportedException {
-        return new Achievement( id, type, description, newAchievement );
+        return new Achievement( id, type, description );
     }
 }

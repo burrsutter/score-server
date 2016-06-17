@@ -16,25 +16,16 @@
 
 package com.redhatkeynote.score.client;
 
-import java.util.Collections;
-import java.util.Set;
-
-import org.drools.core.event.DebugAgendaEventListener;
+import com.redhatkeynote.score.*;
 import org.drools.core.impl.StatelessKnowledgeSessionImpl;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.kie.api.KieServices;
+import org.kie.api.event.rule.DebugAgendaEventListener;
 import org.kie.api.runtime.ClassObjectFilter;
 import org.kie.api.runtime.StatelessKieSession;
 
-import com.redhatkeynote.score.Achievement;
-import com.redhatkeynote.score.DeletePlayers;
-import com.redhatkeynote.score.Player;
-import com.redhatkeynote.score.PlayerAchievement;
-import com.redhatkeynote.score.ScoreServer;
+import java.util.Arrays;
+import java.util.Set;
 
 public class AchievementsTest {
 
@@ -62,97 +53,91 @@ public class AchievementsTest {
 
     @Before
     public void before() {
-        session.execute(new DeletePlayers());
+        session.execute( new DeletePlayers() );
     }
 
     @Test
     public void testScoreNoAchievement() {
         Player p = new Player( "p1", "Player 1", 1, 10, 3, false );
-        p = execute(session, p);
-        Assert.assertTrue( p.getAchievements().isEmpty() );
+        AchievementList na = execute( session, p );
+        Assert.assertTrue( na.getAchievements().isEmpty() );
     }
 
     @Test
     public void testScoreApprenticeAchievement() {
         Player p = new Player( "p1", "Player 1", 1, 60, 3, false );
-        p = execute(session, p);
-        Assert.assertEquals( 1, p.getAchievements().size() );
-        Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[0] ) );
+        AchievementList na = execute( session, p );
+        Assert.assertEquals( 1, na.getAchievements().size() );
+        Assert.assertTrue( na.hasAchievement( ACHIEVEMENTS[0] ) );
     }
 
     @Test
     public void testScoreExpertAchievement() {
         Player p = new Player( "p1", "Player 1", 1, 160, 3, false );
-        p = execute(session, p);
-        Assert.assertEquals( 2, p.getAchievements().size() );
-        Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[0] ) );
-        Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[1] ) );
+        AchievementList na = execute( session, p );
+        Assert.assertEquals( 2, na.getAchievements().size() );
+        Assert.assertTrue( na.hasAchievement( ACHIEVEMENTS[0] ) );
+        Assert.assertTrue( na.hasAchievement( ACHIEVEMENTS[1] ) );
     }
 
     @Test
     public void testScoreMasterAchievement() {
         Player p = new Player( "p1", "Player 1", 1, 360, 3, false );
-        p = execute(session, p);
-        Assert.assertEquals( 3, p.getAchievements().size() );
-        Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[0] ) );
-        Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[1] ) );
-        Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[2] ) );
+        AchievementList na = execute( session, p );
+        Assert.assertEquals( 3, na.getAchievements().size() );
+        Assert.assertTrue( na.hasAchievement( ACHIEVEMENTS[0] ) );
+        Assert.assertTrue( na.hasAchievement( ACHIEVEMENTS[1] ) );
+        Assert.assertTrue( na.hasAchievement( ACHIEVEMENTS[2] ) );
     }
 
     @Test
     public void testScoreApprenticePopper() {
         Player p = new Player( "p1", "Player 1", 1, 10, 5, false );
-        p = execute(session, p);
-        Assert.assertEquals( 1, p.getAchievements().size() );
-        Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[3] ) );
+        AchievementList na = execute( session, p );
+        Assert.assertEquals( 1, na.getAchievements().size() );
+        Assert.assertTrue( na.hasAchievement( ACHIEVEMENTS[3] ) );
     }
 
     @Test
     public void testScoreExpertPopper() {
         Player p = new Player( "p1", "Player 1", 1, 10, 12, false );
-        p = execute(session, p);
-        Assert.assertEquals( 2, p.getAchievements().size() );
-        Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[3] ) );
-        Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[4] ) );
+        AchievementList na = execute( session, p );
+        Assert.assertEquals( 2, na.getAchievements().size() );
+        Assert.assertTrue( na.hasAchievement( ACHIEVEMENTS[3] ) );
+        Assert.assertTrue( na.hasAchievement( ACHIEVEMENTS[4] ) );
     }
 
     @Test
     public void testScoreMasterPopper() {
         Player p = new Player( "p1", "Player 1", 1, 10, 15, false );
-        p = execute(session, p);
-        Assert.assertEquals( 3, p.getAchievements().size() );
-        Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[3] ) );
-        Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[4] ) );
-        Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[5] ) );
+        AchievementList na = execute( session, p );
+        Assert.assertEquals( 3, na.getAchievements().size() );
+        Assert.assertTrue( na.hasAchievement( ACHIEVEMENTS[3] ) );
+        Assert.assertTrue( na.hasAchievement( ACHIEVEMENTS[4] ) );
+        Assert.assertTrue( na.hasAchievement( ACHIEVEMENTS[5] ) );
     }
 
     @Test
     public void testScoreFlagNewAchievements() {
         // Set up achievement 3 and 4
         Player p = new Player( "p1", "Player 1", 1, 10, 12, false );
-        p = execute(session, p);
+        AchievementList na = execute( session, p );
+        Assert.assertEquals( 2, na.getAchievements().size() );
+        Assert.assertTrue( na.hasAchievement( ACHIEVEMENTS[3] ) );
+        Assert.assertTrue( na.hasAchievement( ACHIEVEMENTS[4] ) );
         // Now trigger 5
         p = new Player( "p1", "Player 1", 1, 10, 15, false );
-        p = execute(session, p);
-        Assert.assertEquals( 3, p.getAchievements().size() );
-        Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[5] ) );
-        for( Achievement a : p.getAchievements() ) {
-            if( a.getDescription().equals( ACHIEVEMENTS[3].getDescription()) ) {
-                Assert.assertFalse( a.isNewAchievement() );
-            } else if( a.getDescription().equals( ACHIEVEMENTS[4].getDescription() ) ) {
-                Assert.assertFalse( a.isNewAchievement() );
-            } else if( a.getDescription().equals( ACHIEVEMENTS[5].getDescription() ) ) {
-                Assert.assertTrue( a.isNewAchievement() );
-            }
-        }
+        na = execute( session, p );
+        Assert.assertEquals( 1, na.getAchievements().size() );
+        Assert.assertTrue( na.hasAchievement( ACHIEVEMENTS[5] ) );
     }
 
     @Test
     public void testScoreGoldenSnitch() {
         Player p = new Player( "p1", "Player 1", 1, 1, 1, true );
-        p = execute(session, p);
-        Assert.assertEquals( 1, p.getAchievements().size() );
-        Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[6] ) );
+        AchievementList na = execute( session, p );
+        Assert.assertEquals( 1, na.getAchievements().size() );
+        Assert.assertTrue( na.hasAchievement( ACHIEVEMENTS[6] ) );
     }
 
     @Test
@@ -164,17 +149,18 @@ public class AchievementsTest {
         achievements = ScoreServer.server().loadAchievements();
         Assert.assertEquals( size + 1, achievements.size() );
         boolean found = false;
-        for( Achievement a : achievements ) {
-            if( a.getDescription().equals( pa.getAchievement() ) ) {
+        for ( Achievement a : achievements ) {
+            if ( a.getDescription().equals( pa.getAchievement() ) ) {
                 found = true;
             }
         }
         Assert.assertTrue( found );
     }
 
-
-    private Player execute(final StatelessKieSession session, final Player p) {
-        Player player = (Player) ((StatelessKnowledgeSessionImpl)session).executeWithResults( Collections.singleton(p), new ClassObjectFilter( Player.class ) ).get( 0 );
-        return player;
+    private AchievementList execute(final StatelessKieSession session, final Player p) {
+            AchievementList na = (AchievementList) ((StatelessKnowledgeSessionImpl) session).executeWithResults(
+                    Arrays.asList( p, new AchievementList() ),
+                    new ClassObjectFilter( AchievementList.class ) ).get( 0 );
+            return na;
+        }
     }
-}

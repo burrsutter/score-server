@@ -132,7 +132,7 @@ public final class ScoreServer {
                     if (p.getGoldenSnitch() != null) player.setGoldenSnitch(p.getGoldenSnitch());
                 } catch (NoResultException e) {
                     player = p;
-                    em().persist(player);
+                    em().persist( player );
                 }
                 return player;
             }
@@ -144,7 +144,11 @@ public final class ScoreServer {
         return new Transaction<Player>(entityManager) {
             @Override
             public Player call() throws Exception {
-                return em().merge(p);
+                // we need to preserve the state of transient flags. JPA by default
+                // resets the transient fields when merge() is called
+                Map<String, Boolean> la = new HashMap<String, Boolean>(  );
+                Player player = em().merge(p);
+                return player;
             }
         }.transact();
     }

@@ -37,11 +37,11 @@ rule "process achievement"
         pach   : PlayerAchievement( )
         ach    : Achievement( description == pach.achievement ) from server().loadAchievements()
         player : Player( uuid == pach.uuid, !hasAchievement(ach) )
+        na     : AchievementList()
     then
         logger().info("Processing player achievement: "+player.getUuid()+" -> "+ach.getDescription() );
-        Achievement na = ach.clone();
-        na.setNewAchievement(true);
-        player.addAchievement( na );
+        player.addAchievement( ach );
+        na.addAchievement( ach );
 end
 
 rule "submit player score"
