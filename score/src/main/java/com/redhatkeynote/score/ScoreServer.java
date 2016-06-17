@@ -149,7 +149,20 @@ public final class ScoreServer {
         return new Transaction<Player>(entityManager) {
             @Override
             public Player call() throws Exception {
-                return em().merge(p);
+                TypedQuery<Player> query = em().createQuery("from Player p where p.uuid = :uuid", Player.class);
+                query.setParameter("uuid", uuid);
+                Player player;
+                try {
+                    player = query.getSingleResult();
+                    if (p.getAchievements() != null) {
+                        player.addAchievements(p.getAchievements());
+                    }
+                    player = em().merge(player);
+                } catch (NoResultException e) {
+                    e.printStackTrace();
+                    player=null;
+                }
+                return player;
             }
         }.transact();
     }

@@ -17,8 +17,7 @@ rule "load and merge player"
     when
         player : Player(id == null)
     then
-        Player p = server().loadPlayer(player);
-        update(player__Handle__, p);
+        server().loadPlayer(player);
 end
 
 rule "Create achievement if it does not exist"
