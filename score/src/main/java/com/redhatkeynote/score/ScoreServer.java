@@ -144,11 +144,7 @@ public final class ScoreServer {
         return new Transaction<Player>(entityManager) {
             @Override
             public Player call() throws Exception {
-                // we need to preserve the state of transient flags. JPA by default
-                // resets the transient fields when merge() is called
-                Map<String, Boolean> la = new HashMap<String, Boolean>(  );
-                Player player = em().merge(p);
-                return player;
+                return em().merge(p);
             }
         }.transact();
     }
