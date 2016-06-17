@@ -16,22 +16,25 @@
 
 package com.redhatkeynote.score.client;
 
+import java.util.Collections;
+import java.util.Set;
+
+import org.drools.core.event.DebugAgendaEventListener;
+import org.drools.core.impl.StatelessKnowledgeSessionImpl;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.kie.api.KieServices;
+import org.kie.api.runtime.ClassObjectFilter;
+import org.kie.api.runtime.StatelessKieSession;
+
 import com.redhatkeynote.score.Achievement;
 import com.redhatkeynote.score.DeletePlayers;
 import com.redhatkeynote.score.Player;
 import com.redhatkeynote.score.PlayerAchievement;
 import com.redhatkeynote.score.ScoreServer;
-import org.drools.core.event.DebugAgendaEventListener;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.kie.api.KieServices;
-import org.kie.api.runtime.StatelessKieSession;
-
-import java.util.Set;
 
 public class AchievementsTest {
 
@@ -124,7 +127,6 @@ public class AchievementsTest {
     }
 
     @Test
-    @Ignore("Ignored until we work out how to return the JPA managed player object from the stateless session")
     public void testScoreFlagNewAchievements() {
         // Set up achievement 3 and 4
         Player p = new Player( "p1", "Player 1", 1, 10, 12, false );
@@ -172,8 +174,7 @@ public class AchievementsTest {
 
 
     private Player execute(final StatelessKieSession session, final Player p) {
-        session.execute(p);
-        return ScoreServer.server().loadPlayer(new Player(p.getUuid(), null, null, null, null, null));
+        Player player = (Player) ((StatelessKnowledgeSessionImpl)session).executeWithResults( Collections.singleton(p), new ClassObjectFilter( Player.class ) ).get( 0 );
+        return player;
     }
-
 }

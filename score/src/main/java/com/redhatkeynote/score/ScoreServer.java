@@ -130,7 +130,6 @@ public final class ScoreServer {
                     if (p.getScore() != null) player.setScore(p.getScore());
                     if (p.getConsecutivePops() != null) player.setConsecutivePops(p.getConsecutivePops());
                     if (p.getGoldenSnitch() != null) player.setGoldenSnitch(p.getGoldenSnitch());
-                    player = em().merge(player);
                 } catch (NoResultException e) {
                     player = p;
                     em().persist(player);
@@ -142,27 +141,10 @@ public final class ScoreServer {
 
 //    // TODO: respect game status
     public Player savePlayer(Player p) {
-        String uuid = p != null ? p.getUuid() : null;
-        if (uuid == null) {
-            throw new IllegalArgumentException("unidentified player");
-        }
         return new Transaction<Player>(entityManager) {
             @Override
             public Player call() throws Exception {
-                TypedQuery<Player> query = em().createQuery("from Player p where p.uuid = :uuid", Player.class);
-                query.setParameter("uuid", uuid);
-                Player player;
-                try {
-                    player = query.getSingleResult();
-                    if (p.getAchievements() != null) {
-                        player.addAchievements(p.getAchievements());
-                    }
-                    player = em().merge(player);
-                } catch (NoResultException e) {
-                    e.printStackTrace();
-                    player=null;
-                }
-                return player;
+                return em().merge(p);
             }
         }.transact();
     }
