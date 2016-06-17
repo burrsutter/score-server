@@ -86,18 +86,18 @@ public final class ScoreServer {
         }
     }
 
-    public void createAchievement(final String desc ) {
-        if (desc == null) {
+    public void createAchievement(final String description ) {
+        if (description == null) {
             throw new IllegalArgumentException("Uninitialised achievement");
         }
         final String uuid = UUID.randomUUID().toString();
-        Achievement a = new Achievement(uuid, desc);
+        Achievement a = new Achievement(uuid, description);
 
         new Transaction<Object>(entityManager) {
             @Override
             public Object call() throws Exception {
-                TypedQuery<Achievement> query = em().createQuery("from Achievement a where a.desc = :desc", Achievement.class);
-                query.setParameter("desc", desc);
+                TypedQuery<Achievement> query = em().createQuery("from Achievement a where a.description = :description", Achievement.class);
+                query.setParameter("description", description);
                 query.setLockMode(LockModeType.PESSIMISTIC_WRITE);
                 try {
                     query.getSingleResult();
@@ -169,7 +169,7 @@ public final class ScoreServer {
                         LOGGER.warn(String.format("Team %s doesn't exist.", t));
                     }
                 }
-                TypedQuery<PlayerScore> query = em().createQuery("select new com.redhatkeynote.score.PlayerScore(p.username, p.score) from Player p order by p.score desc, p.username asc", PlayerScore.class);
+                TypedQuery<PlayerScore> query = em().createQuery("select new com.redhatkeynote.score.PlayerScore(p.username, p.score) from Player p order by p.score description, p.username asc", PlayerScore.class);
                 query.setMaxResults(limit);
                 List<PlayerScore> playerScores = query.getResultList();
                 for (PlayerScore playerScore : playerScores) {

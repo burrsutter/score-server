@@ -135,11 +135,11 @@ public class AchievementsTest {
         Assert.assertEquals( 3, p.getAchievements().size() );
         Assert.assertTrue( p.hasAchievement( ACHIEVEMENTS[5] ) );
         for( Achievement a : p.getAchievements() ) {
-            if( a.getDesc().equals( ACHIEVEMENTS[3].getDesc()) ) {
+            if( a.getDescription().equals( ACHIEVEMENTS[3].getDescription()) ) {
                 Assert.assertFalse( a.isNewAchievement() );
-            } else if( a.getDesc().equals( ACHIEVEMENTS[4].getDesc() ) ) {
+            } else if( a.getDescription().equals( ACHIEVEMENTS[4].getDescription() ) ) {
                 Assert.assertFalse( a.isNewAchievement() );
-            } else if( a.getDesc().equals( ACHIEVEMENTS[5].getDesc() ) ) {
+            } else if( a.getDescription().equals( ACHIEVEMENTS[5].getDescription() ) ) {
                 Assert.assertTrue( a.isNewAchievement() );
             }
         }
@@ -163,7 +163,7 @@ public class AchievementsTest {
         Assert.assertEquals( size + 1, achievements.size() );
         boolean found = false;
         for( Achievement a : achievements ) {
-            if( a.getDesc().equals( pa.getAchievement() ) ) {
+            if( a.getDescription().equals( pa.getAchievement() ) ) {
                 found = true;
             }
         }

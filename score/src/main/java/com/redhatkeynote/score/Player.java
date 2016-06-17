@@ -100,9 +100,9 @@ public class Player implements Serializable {
 
     public boolean hasAchievement( Achievement achievement ) {
         if (achievement != null) {
-            final String desc = achievement.getDesc();
+            final String desc = achievement.getDescription();
             for(Achievement current: achievements) {
-                if (current.getDesc().equals(desc)) {
+                if (current.getDescription().equals(desc)) {
                     return true;
                 }
             }

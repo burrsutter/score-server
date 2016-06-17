@@ -25,7 +25,7 @@ rule "Create achievement if it does not exist"
         salience -3
     when
         pach   : PlayerAchievement( )
-        not( Achievement( desc == pach.achievement ) from server().loadAchievements() )
+        not( Achievement( description == pach.achievement ) from server().loadAchievements() )
     then
         server().createAchievement( pach.getAchievement() );
         update( pach );
@@ -35,10 +35,10 @@ rule "process achievement"
         salience -5
     when
         pach   : PlayerAchievement( )
-        ach    : Achievement( desc == pach.achievement ) from server().loadAchievements()
+        ach    : Achievement( description == pach.achievement ) from server().loadAchievements()
         player : Player( uuid == pach.uuid, !hasAchievement(ach) )
     then
-        logger().info("Processing player achievement: "+player.getUuid()+" -> "+ach.getDesc() );
+        logger().info("Processing player achievement: "+player.getUuid()+" -> "+ach.getDescription() );
         Achievement na = ach.clone();
         na.setNewAchievement(true);
         player.addAchievement( na );

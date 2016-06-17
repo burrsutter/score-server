@@ -31,8 +31,8 @@ public class Achievement implements Serializable, Cloneable {
     @Column(name="type")
     private String type;
 
-    @Column(name="desc")
-    private String desc;
+    @Column(name="description")
+    private String description;
 
     @Transient
     private boolean newAchievement;
@@ -40,15 +40,15 @@ public class Achievement implements Serializable, Cloneable {
     public Achievement() {
     }
 
-    public Achievement(String type, String desc) {
+    public Achievement(String type, String description) {
         this.type = type;
-        this.desc = desc;
+        this.description = description;
     }
 
-    public Achievement(Integer id, String type, String desc, boolean newAchievement) {
+    public Achievement(Integer id, String type, String description, boolean newAchievement) {
         this.id = id;
         this.type = type;
-        this.desc = desc;
+        this.description = description;
         this.newAchievement = newAchievement;
     }
 
@@ -60,12 +60,12 @@ public class Achievement implements Serializable, Cloneable {
         this.type = type;
     }
 
-    public String getDesc() {
-        return desc;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public boolean isNewAchievement() {
@@ -84,25 +84,25 @@ public class Achievement implements Serializable, Cloneable {
         Achievement that = (Achievement) o;
 
         if ( type != null ? !type.equals( that.type ) : that.type != null ) return false;
-        return !(desc != null ? !desc.equals( that.desc ) : that.desc != null);
+        return !(description != null ? !description.equals( that.description ) : that.description != null);
 
     }
 
     @Override
     public int hashCode() {
         int result = type != null ? type.hashCode() : 0;
-        result = 31 * result + (desc != null ? desc.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
-        return desc;
+        return description;
     }
 
     @Override
     public Achievement clone()
             throws CloneNotSupportedException {
-        return new Achievement( id, type, desc, newAchievement );
+        return new Achievement( id, type, description, newAchievement );
     }
 }
