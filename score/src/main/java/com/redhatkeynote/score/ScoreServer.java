@@ -92,13 +92,22 @@ public final class ScoreServer {
         }
         final String uuid = UUID.randomUUID().toString();
         Achievement a = new Achievement(uuid, desc);
-        new Transaction<Void>(entityManager) {
+
+        new Transaction<Object>(entityManager) {
             @Override
-            public Void call() throws Exception {
-                em().persist(a);
+            public Object call() throws Exception {
+                TypedQuery<Achievement> query = em().createQuery("from Achievement a where a.desc = :desc", Achievement.class);
+                query.setParameter("desc", desc);
+                query.setLockMode(LockModeType.PESSIMISTIC_WRITE);
+                try {
+                    query.getSingleResult();
+                } catch (NoResultException e) {
+                    em().persist(a);
+                }
                 return null;
             }
         }.transact();
+
         achievements.set(null);
     }
 
