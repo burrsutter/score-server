@@ -13,10 +13,12 @@ rule "init game"
 end
 
 rule "load and merge player"
+        salience 80
     when
-        player : Player()
+        player : Player(id == null)
     then
-        server().loadPlayer(player);
+        Player p = server().loadPlayer(player);
+        update(player__Handle__, p);
 end
 
 rule "Create achievement if it does not exist"
@@ -51,3 +53,10 @@ rule "submit player score"
         server().savePlayer(player);
 end
 
+
+rule "delete players"
+    when
+        deletePlayers : DeletePlayers()
+    then
+        server().deletePlayers();
+end

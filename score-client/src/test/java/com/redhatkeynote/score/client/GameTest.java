@@ -1,6 +1,9 @@
 package com.redhatkeynote.score.client;
 
 import jdk.nashorn.internal.ir.annotations.Ignore;
+
+import java.util.Arrays;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

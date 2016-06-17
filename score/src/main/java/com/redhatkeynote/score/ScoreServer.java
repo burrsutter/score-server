@@ -1,29 +1,26 @@
 package com.redhatkeynote.score;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.LockModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.kie.api.runtime.KieContext;
-import org.kie.server.api.marshalling.Marshaller;
-import org.kie.server.api.marshalling.MarshallerFactory;
-import org.kie.server.api.marshalling.MarshallingFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.security.provider.MD5;
 
 public final class ScoreServer {
 
     private static final Logger      LOGGER          = LoggerFactory.getLogger( ScoreServer.class );
     private static final ScoreServer SERVER          = new ScoreServer();
-    private static final Marshaller  JSON_MARSHALLER = MarshallerFactory.getMarshaller( MarshallingFormat.JSON, ScoreServer.class.getClassLoader() );
-    private Set<Achievement> achievements;
+    private AtomicReference<Set<Achievement>> achievements = new AtomicReference<Set<Achievement>>(null);
 
     public static final Logger logger() {
         return LOGGER;
@@ -34,10 +31,6 @@ public final class ScoreServer {
     }
 
     private EntityManager entityManager = null;
-
-    public ScoreServer() {
-        achievements = new HashSet<Achievement>();
-    }
 
     public synchronized ScoreServer init(KieContext kcontext) {
         try {
@@ -74,48 +67,81 @@ public final class ScoreServer {
     }
 
     public Set<Achievement> loadAchievements() {
-        // loads and returns the list of available achievements from the database
-        return achievements;
+        Set<Achievement> current = achievements.get();
+        if (current != null) {
+            return current;
+        }
+        final List<Achievement> listOfAchievements = new Transaction<List<Achievement>>(entityManager) {
+            @Override
+            public List<Achievement> call() throws Exception {
+                TypedQuery<Achievement> query = em().createQuery("from Achievement a", Achievement.class);
+                return query.getResultList();
+            }
+        }.transact();
+        final HashSet<Achievement> newSet = new HashSet<>(listOfAchievements);
+        if (achievements.compareAndSet(null, newSet)) {
+            return newSet;
+        } else {
+            return loadAchievements();
+        }
     }
 
-    public void createAchievement( String desc ) {
-        // we need to make sure the achievement type below is unique. This
-        // is just a dummy implementation for now
-        Achievement a = new Achievement( desc.substring( 0, 7 ), desc );
-        achievements.add( a );
+    public void createAchievement(final String desc ) {
+        if (desc == null) {
+            throw new IllegalArgumentException("Uninitialised achievement");
+        }
+        final String uuid = UUID.randomUUID().toString();
+        Achievement a = new Achievement(uuid, desc);
+        new Transaction<Void>(entityManager) {
+            @Override
+            public Void call() throws Exception {
+                em().persist(a);
+                return null;
+            }
+        }.transact();
+        achievements.set(null);
     }
 
     public Player loadPlayer( Player p ) {
-        // load from database and merge
-        return p;
+        String uuid = p != null ? p.getUuid() : null;
+        if (uuid == null) {
+            throw new IllegalArgumentException("unidentified player");
+        }
+        return new Transaction<Player>(entityManager) {
+            @Override
+            public Player call() throws Exception {
+                TypedQuery<Player> query = em().createQuery("from Player p where p.uuid = :uuid", Player.class);
+                query.setParameter("uuid", uuid);
+                Player player;
+                try {
+                    player = query.getSingleResult();
+                    if (p.getUsername() != null) player.setUsername(p.getUsername());
+                    if (p.getTeam() != null) player.setTeam(p.getTeam());
+                    if (p.getScore() != null) player.setScore(p.getScore());
+                    if (p.getConsecutivePops() != null) player.setConsecutivePops(p.getConsecutivePops());
+                    if (p.getGoldenSnitch() != null) player.setGoldenSnitch(p.getGoldenSnitch());
+                    player = em().merge(player);
+                } catch (NoResultException e) {
+                    player = p;
+                    em().persist(player);
+                }
+                return player;
+            }
+        }.transact();
     }
 
-    // TODO: respect game status
+//    // TODO: respect game status
     public Player savePlayer(Player p) {
-//        String uuid = p != null ? p.getUuid() : null;
-//        if (uuid == null) {
-//            throw new IllegalArgumentException("unidentified player");
-//        }
-//        return new Transaction<Player>(entityManager) {
-//            @Override
-//            public Player call() throws Exception {
-//                TypedQuery<Player> query = em().createQuery("from Player p where p.uuid = :uuid", Player.class);
-//                query.setParameter("uuid", uuid);
-//                Player player;
-//                try {
-//                    player = query.getSingleResult();
-//                    if (p.getUsername() != null) player.setUsername(p.getUsername());
-//                    if (p.getTeam() != null) player.setTeam(p.getTeam());
-//                    if (p.getScore() != null) player.setScore(p.getScore());
-//                    em().merge(player);
-//                } catch (NoResultException e) {
-//                    player = p;
-//                    em().persist(player);
-//                }
-//                return player;
-//            }
-//        }.transact();
-        return p;
+        String uuid = p != null ? p.getUuid() : null;
+        if (uuid == null) {
+            throw new IllegalArgumentException("unidentified player");
+        }
+        return new Transaction<Player>(entityManager) {
+            @Override
+            public Player call() throws Exception {
+                return em().merge(p);
+            }
+        }.transact();
     }
 
     public ScoreSummary getScoreSummary( final ScoreSummary ss ) {
@@ -145,10 +171,15 @@ public final class ScoreServer {
         }.transact();
     }
 
-    public void broadcastScores(int numTopPlayerScores) {
-        ScoreSummary ss = getScoreSummary( new ScoreSummary( numTopPlayerScores ) );
-        String json = JSON_MARSHALLER.marshall(ss);
-        LOGGER.info(String.format("http://leaderboard/api?json=%s", json));
+    public void deletePlayers() {
+        new Transaction<Void>(entityManager) {
+            @Override
+            public Void call() throws Exception {
+                Query delete = em().createQuery("delete from Player p");
+                delete.setLockMode(LockModeType.PESSIMISTIC_WRITE);
+                delete.executeUpdate();
+                return null;
+            }
+        }.transact();
     }
-
 }
