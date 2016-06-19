@@ -68,17 +68,20 @@ public class TeamScore implements Comparable<TeamScore>, Serializable {
             return 0;
         }
         // compare score first
-        int thisScore = this.score != null ? this.score.intValue() : 0;
-        int thatScore = that != null ? (that.score != null ? that.score.intValue() : 0) : 0;
+        int thisScore = this.score != null ? this.score : 0;
+        int thatScore = that != null ? (that.score != null ? that.score : 0) : 0;
         // descending
-        int c = Integer.valueOf(thatScore).compareTo(thisScore);
+        int c = compareInt(thatScore, thisScore);
         if (c == 0) {
-            // compare summary second
-            Integer thisTeam = this.team != null ? this.team : 0;
-            Integer thatTeam = that != null ? (that.team != null ? that.team : 0) : 0;
-            c = thisTeam.compareTo(thatTeam);
+            // compare team second
+            int thisTeam = this.team != null ? this.team : 0;
+            int thatTeam = that != null ? (that.team != null ? that.team : 0) : 0;
+            c = compareInt(thisTeam, thatTeam);
         }
         return c;
     }
 
+    private static int compareInt(final int lhs, final int rhs) {
+        return (lhs < rhs) ? -1 : ((lhs == rhs) ? 0 : 1);
+    }
 }

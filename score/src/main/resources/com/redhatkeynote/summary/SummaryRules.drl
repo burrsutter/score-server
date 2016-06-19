@@ -3,6 +3,13 @@ package com.redhatkeynote.summary;
 import com.redhatkeynote.score.ScoreSummary
 import function com.redhatkeynote.score.ScoreServer.server
 
+rule "init game"
+        salience 100
+    when
+    then
+        server().init(kcontext);
+end
+
 rule "TeamRules"
     when
         $ss : ScoreSummary()

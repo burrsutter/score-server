@@ -1,6 +1,5 @@
 package com.redhatkeynote.score
 
-import function com.redhatkeynote.score.ScoreServer.logger
 import function com.redhatkeynote.score.ScoreServer.server
 import java.util.List
 
@@ -8,7 +7,6 @@ rule "init game"
         salience 100
     when
     then
-        logger().info("init game");
         server().init(kcontext);
 end
 
@@ -39,7 +37,6 @@ rule "process achievement"
         player : Player( uuid == pach.uuid, !hasAchievement(ach) )
         na     : AchievementList()
     then
-        logger().info("Processing player achievement: "+player.getUuid()+" -> "+ach.getDescription() );
         player.addAchievement( ach );
         na.addAchievement( ach );
 end
@@ -49,7 +46,6 @@ rule "submit player score"
     when
         player : Player()
     then
-        logger().info("submit player score");
         server().savePlayer(player);
 end
 

@@ -5,14 +5,24 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class PlayerScore implements Comparable<PlayerScore>, Serializable {
 
+    private String uuid;
     private String username;
     private Integer score;
 
     public PlayerScore() {}
 
-    public PlayerScore(String username, Integer score) {
+    public PlayerScore(String uuid, String username, Integer score) {
+        setUuid(uuid);
         setUsername(username);
         setScore(score);
+    }
+
+    public String getUuid() {
+        return this.uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public String getUsername() {
@@ -50,7 +60,7 @@ public class PlayerScore implements Comparable<PlayerScore>, Serializable {
                 return false;
         } else if (!username.equals(other.username))
             return false;
-        return true;
+        return (uuid == null) ? (other.uuid == null) : uuid.equals(other.uuid);
     }
 
     @Override
@@ -59,6 +69,7 @@ public class PlayerScore implements Comparable<PlayerScore>, Serializable {
         int result = 1;
         result = prime * result + ((score == null) ? 0 : score.hashCode());
         result = prime * result + ((username == null) ? 0 : username.hashCode());
+        result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
         return result;
     }
 

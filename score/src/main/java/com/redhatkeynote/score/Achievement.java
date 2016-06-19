@@ -21,6 +21,10 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "achievements")
+@NamedQueries({
+    @NamedQuery(name="getAchievements", query="from Achievement a"),
+    @NamedQuery(name="findAchievementByDescriptionTeamScores", query="from Achievement a where a.description = :description"),
+})
 public class Achievement implements Serializable, Cloneable {
 
     @Id

@@ -9,11 +9,19 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
 @Table(name="player")
 @SuppressWarnings("serial")
+@NamedQueries({
+    @NamedQuery(name="findPlayerByUuid", query="from Player p where p.uuid = :uuid"),
+    @NamedQuery(name="getTeamScores", query="select new com.redhatkeynote.score.TeamScore(p.team, sum(p.score)) from Player p group by p.team"),
+    @NamedQuery(name="getPlayerScores", query="select new com.redhatkeynote.score.PlayerScore(p.uuid, p.username, p.score) from Player p order by p.score desc, p.username asc"),
+    @NamedQuery(name="deletePlayers", query="delete from Player p")
+})
 public class Player implements Serializable {
 
     @Id
@@ -27,7 +35,7 @@ public class Player implements Serializable {
     @Column(name = "username")//, unique=true)
     private String username;
 
-    @Column(name = "summary")
+    @Column(name = "team")
     private Integer team;
 
     @Column(name = "score")

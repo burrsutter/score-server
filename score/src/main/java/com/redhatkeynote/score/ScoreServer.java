@@ -30,39 +30,29 @@ public final class ScoreServer {
         return SERVER;
     }
 
-    private EntityManager entityManager = null;
+    private AtomicReference<EntityManager> entityManagerReference = new AtomicReference<>();
 
     public synchronized ScoreServer init(KieContext kcontext) {
-        try {
-            if ( entityManager == null ) {
-                EntityManagerFactory emf;
-                final ClassLoader tccl = Thread.currentThread().getContextClassLoader();
-                try {
-                    // https://issues.jboss.org/browse/DROOLS-1108
-                    ClassLoader cl = ((InternalKnowledgeBase) kcontext.getKieRuntime().getKieBase()).getRootClassLoader();
-                    Thread.currentThread().setContextClassLoader( cl );
-                    emf = Persistence.createEntityManagerFactory("score");
-                } finally {
-                    Thread.currentThread().setContextClassLoader(tccl);
-                }
-                entityManager = emf.createEntityManager();
-                new Transaction<Object>(entityManager) {
-                    @Override
-                    public Object call() throws Exception {
-                        TypedQuery<Game> query = em().createQuery("from Game g", Game.class);
-                        query.setLockMode(LockModeType.PESSIMISTIC_WRITE);
+        if (entityManagerReference.get() == null) {
+            synchronized(this) {
+                if (entityManagerReference.get() == null) {
+                    try {
+                        EntityManagerFactory emf;
+                        final ClassLoader tccl = Thread.currentThread().getContextClassLoader();
                         try {
-                            query.getSingleResult();
-                        } catch (NoResultException e) {
-                            Game game = new Game(Status.CLOSED);
-                            em().persist(game);
+                            // https://issues.jboss.org/browse/DROOLS-1108
+                            ClassLoader cl = ((InternalKnowledgeBase) kcontext.getKieRuntime().getKieBase()).getRootClassLoader();
+                            Thread.currentThread().setContextClassLoader( cl );
+                            emf = Persistence.createEntityManagerFactory("score");
+                        } finally {
+                            Thread.currentThread().setContextClassLoader(tccl);
                         }
-                        return null;
+                        entityManagerReference.compareAndSet(null, emf.createEntityManager());
+                    } catch( Throwable t ) {
+                        LOGGER.error( "Error initializing the server:", t );
                     }
-                }.transact();
+                }
             }
-        } catch( Throwable t ) {
-            LOGGER.error( "Error initializing the server:", t );
         }
         return this;
     }
@@ -72,10 +62,10 @@ public final class ScoreServer {
         if (current != null) {
             return current;
         }
-        final List<Achievement> listOfAchievements = new Transaction<List<Achievement>>(entityManager) {
+        final List<Achievement> listOfAchievements = new Transaction<List<Achievement>>(entityManagerReference.get()) {
             @Override
             public List<Achievement> call() throws Exception {
-                TypedQuery<Achievement> query = em().createQuery("from Achievement a", Achievement.class);
+                TypedQuery<Achievement> query = em().createNamedQuery("getAchievements", Achievement.class);
                 return query.getResultList();
             }
         }.transact();
@@ -94,10 +84,10 @@ public final class ScoreServer {
         final String uuid = UUID.randomUUID().toString();
         Achievement a = new Achievement(uuid, description);
 
-        new Transaction<Object>(entityManager) {
+        new Transaction<Object>(entityManagerReference.get()) {
             @Override
             public Object call() throws Exception {
-                TypedQuery<Achievement> query = em().createQuery("from Achievement a where a.description = :description", Achievement.class);
+                TypedQuery<Achievement> query = em().createNamedQuery("findAchievementByDescriptionTeamScores", Achievement.class);
                 query.setParameter("description", description);
                 query.setLockMode(LockModeType.PESSIMISTIC_WRITE);
                 try {
@@ -117,10 +107,10 @@ public final class ScoreServer {
         if (uuid == null) {
             throw new IllegalArgumentException("unidentified player");
         }
-        return new Transaction<Player>(entityManager) {
+        return new Transaction<Player>(entityManagerReference.get()) {
             @Override
             public Player call() throws Exception {
-                TypedQuery<Player> query = em().createQuery("from Player p where p.uuid = :uuid", Player.class);
+                TypedQuery<Player> query = em().createNamedQuery("findPlayerByUuid", Player.class);
                 query.setParameter("uuid", uuid);
                 Player player;
                 try {
@@ -141,7 +131,7 @@ public final class ScoreServer {
 
 //    // TODO: respect game status
     public Player savePlayer(Player p) {
-        return new Transaction<Player>(entityManager) {
+        return new Transaction<Player>(entityManagerReference.get()) {
             @Override
             public Player call() throws Exception {
                 return em().merge(p);
@@ -151,36 +141,25 @@ public final class ScoreServer {
 
     public ScoreSummary getScoreSummary( final ScoreSummary ss ) {
         final int limit = ss.getTopPlayers() < 0 ? 0 : ss.getTopPlayers();
-        return new Transaction<ScoreSummary>(entityManager) {
+        return new Transaction<ScoreSummary>(entityManagerReference.get()) {
             @Override
             public ScoreSummary call() throws Exception {
-                // TODO: collapse into one query
-                for (int t=1; t < 5; t++) {
-                    TypedQuery<TeamScore> query = em().createQuery("select new com.redhatkeynote.score.TeamScore(p.summary, sum(p.score)) from Player p where p.summary = :summary group by p.summary", TeamScore.class);
-                    query.setParameter("team", Integer.valueOf(t));
-                    try {
-                        TeamScore teamScore = query.getSingleResult();
-                        ss.addTeamScore(teamScore);
-                    } catch (NoResultException e) {
-                        LOGGER.warn(String.format("Team %s doesn't exist.", t));
-                    }
-                }
-                TypedQuery<PlayerScore> query = em().createQuery("select new com.redhatkeynote.score.PlayerScore(p.username, p.score) from Player p order by p.score description, p.username asc", PlayerScore.class);
-                query.setMaxResults(limit);
-                List<PlayerScore> playerScores = query.getResultList();
-                for (PlayerScore playerScore : playerScores) {
-                    ss.addTopPlayerScore(playerScore);
-                }
+                TypedQuery<TeamScore> teamScoreQuery = em().createNamedQuery("getTeamScores", TeamScore.class);
+                ss.addTeamScores(teamScoreQuery.getResultList());
+
+                TypedQuery<PlayerScore> playerScoreQuery = em().createNamedQuery("getPlayerScores", PlayerScore.class);
+                playerScoreQuery.setMaxResults(limit);
+                ss.addTopPlayerScores(playerScoreQuery.getResultList());
                 return ss;
             }
         }.transact();
     }
 
     public void deletePlayers() {
-        new Transaction<Void>(entityManager) {
+        new Transaction<Void>(entityManagerReference.get()) {
             @Override
             public Void call() throws Exception {
-                Query delete = em().createQuery("delete from Player p");
+                Query delete = em().createNamedQuery("deletePlayers");
                 delete.setLockMode(LockModeType.PESSIMISTIC_WRITE);
                 delete.executeUpdate();
                 return null;

@@ -1,6 +1,7 @@
 package com.redhatkeynote.score;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -26,9 +27,9 @@ public class ScoreSummary implements Serializable {
         this.teamScores = teamScores;
     }
 
-    public void addTeamScore(TeamScore teamScore) {
-        if (teamScore != null) {
-            teamScores.add(teamScore);
+    public void addTeamScores(List<TeamScore> scores) {
+        if (scores != null) {
+            this.teamScores.addAll(scores);
         }
     }
 
@@ -40,9 +41,9 @@ public class ScoreSummary implements Serializable {
         this.topPlayerScores = topPlayerScores;
     }
 
-    public void addTopPlayerScore(PlayerScore playerScore) {
-        if (playerScore != null) {
-            topPlayerScores.add(playerScore);
+    public void addTopPlayerScores(List<PlayerScore> playerScores) {
+        if (playerScores != null) {
+            this.topPlayerScores.addAll(playerScores);
         }
     }
 
