@@ -6,7 +6,7 @@
   </rowNumberCol>
   <descriptionCol>
     <hideColumn>false</hideColumn>
-    <width>-1</width>
+    <width>171</width>
   </descriptionCol>
   <metadataCols/>
   <attributeCols/>
@@ -19,20 +19,22 @@
         <condition-column52>
           <typedDefaultValue>
             <valueString></valueString>
-            <dataType>STRING</dataType>
+            <dataType>NUMERIC_INTEGER</dataType>
             <isOtherwise>false</isOtherwise>
           </typedDefaultValue>
           <hideColumn>false</hideColumn>
-          <width>-1</width>
+          <width>134</width>
           <header>Minimum pops</header>
           <constraintValueType>1</constraintValueType>
           <factField>consecutivePops</factField>
           <fieldType>Integer</fieldType>
           <operator>&gt;=</operator>
           <parameters/>
+          <binding></binding>
         </condition-column52>
       </conditions>
       <window>
+        <operator></operator>
         <parameters/>
       </window>
     </Pattern52>
@@ -51,7 +53,7 @@ insert( pa );</text>
       <childColumns>
         <org.drools.workbench.models.guided.dtable.shared.model.BRLActionVariableColumn>
           <hideColumn>false</hideColumn>
-          <width>-1</width>
+          <width>319</width>
           <header>Achievement</header>
           <varName>descr</varName>
           <fieldType>Object</fieldType>
@@ -100,18 +102,18 @@ insert( pa );</text>
         <isOtherwise>false</isOtherwise>
       </value>
       <value>
-        <valueString>Apprentice popper</valueString>
+        <valueString>Splash Expert</valueString>
         <dataType>STRING</dataType>
         <isOtherwise>false</isOtherwise>
       </value>
       <value>
-        <valueNumeric class="int">5</valueNumeric>
+        <valueNumeric class="int">10</valueNumeric>
         <valueString></valueString>
         <dataType>NUMERIC_INTEGER</dataType>
         <isOtherwise>false</isOtherwise>
       </value>
       <value>
-        <valueString>Apprentice Popper</valueString>
+        <valueString>Splash Expert! 10 in a row!</valueString>
         <dataType>STRING</dataType>
         <isOtherwise>false</isOtherwise>
       </value>
@@ -124,31 +126,7 @@ insert( pa );</text>
         <isOtherwise>false</isOtherwise>
       </value>
       <value>
-        <valueString>Expert popper</valueString>
-        <dataType>STRING</dataType>
-        <isOtherwise>false</isOtherwise>
-      </value>
-      <value>
-        <valueNumeric class="int">10</valueNumeric>
-        <valueString></valueString>
-        <dataType>NUMERIC_INTEGER</dataType>
-        <isOtherwise>false</isOtherwise>
-      </value>
-      <value>
-        <valueString>Expert Popper</valueString>
-        <dataType>STRING</dataType>
-        <isOtherwise>false</isOtherwise>
-      </value>
-    </list>
-    <list>
-      <value>
-        <valueNumeric class="int">3</valueNumeric>
-        <valueString></valueString>
-        <dataType>NUMERIC_INTEGER</dataType>
-        <isOtherwise>false</isOtherwise>
-      </value>
-      <value>
-        <valueString>Master popper</valueString>
+        <valueString>Splash Master</valueString>
         <dataType>STRING</dataType>
         <isOtherwise>false</isOtherwise>
       </value>
@@ -159,7 +137,7 @@ insert( pa );</text>
         <isOtherwise>false</isOtherwise>
       </value>
       <value>
-        <valueString>Master Popper</valueString>
+        <valueString>Splash Master! 15 in a row!</valueString>
         <dataType>STRING</dataType>
         <isOtherwise>false</isOtherwise>
       </value>

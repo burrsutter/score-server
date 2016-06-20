@@ -6,7 +6,7 @@
   </rowNumberCol>
   <descriptionCol>
     <hideColumn>false</hideColumn>
-    <width>-1</width>
+    <width>183</width>
   </descriptionCol>
   <metadataCols/>
   <attributeCols/>
@@ -50,7 +50,7 @@
       <childColumns>
         <org.drools.workbench.models.guided.dtable.shared.model.BRLActionVariableColumn>
           <hideColumn>false</hideColumn>
-          <width>-1</width>
+          <width>324</width>
           <header>Achievement</header>
           <varName>descr</varName>
           <fieldType>Object</fieldType>
@@ -99,18 +99,18 @@
         <isOtherwise>false</isOtherwise>
       </value>
       <value>
-        <valueString>Apprentice scorer</valueString>
+        <valueString>Splish Splash</valueString>
         <dataType>STRING</dataType>
         <isOtherwise>false</isOtherwise>
       </value>
       <value>
-        <valueNumeric class="int">50</valueNumeric>
+        <valueNumeric class="int">10</valueNumeric>
         <valueString></valueString>
         <dataType>NUMERIC_INTEGER</dataType>
         <isOtherwise>false</isOtherwise>
       </value>
       <value>
-        <valueString>Apprentice Scorer</valueString>
+        <valueString>Splish Splash! 10 points!</valueString>
         <dataType>STRING</dataType>
         <isOtherwise>false</isOtherwise>
       </value>
@@ -123,7 +123,7 @@
         <isOtherwise>false</isOtherwise>
       </value>
       <value>
-        <valueString>Expert scorer</valueString>
+        <valueString>Soaked</valueString>
         <dataType>STRING</dataType>
         <isOtherwise>false</isOtherwise>
       </value>
@@ -134,7 +134,7 @@
         <isOtherwise>false</isOtherwise>
       </value>
       <value>
-        <valueString>Expert Scorer</valueString>
+        <valueString>Soaked! 100 points!</valueString>
         <dataType>STRING</dataType>
         <isOtherwise>false</isOtherwise>
       </value>
@@ -147,7 +147,7 @@
         <isOtherwise>false</isOtherwise>
       </value>
       <value>
-        <valueString>Master scorer</valueString>
+        <valueString>Balloon Boss</valueString>
         <dataType>STRING</dataType>
         <isOtherwise>false</isOtherwise>
       </value>
@@ -158,7 +158,7 @@
         <isOtherwise>false</isOtherwise>
       </value>
       <value>
-        <valueString>Master Scorer</valueString>
+        <valueString>Balloon Boss! 300 points!</valueString>
         <dataType>STRING</dataType>
         <isOtherwise>false</isOtherwise>
       </value>
