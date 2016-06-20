@@ -23,9 +23,9 @@ rule "Create achievement if it does not exist"
         salience -3
     when
         pach   : PlayerAchievement( )
-        not( Achievement( description == pach.achievement ) from server().loadAchievements() )
+        not( Achievement( type == pach.type ) from server().loadAchievements() )
     then
-        server().createAchievement( pach.getAchievement() );
+        server().createAchievement( pach.getType(), pach.getAchievement() );
         update( pach );
 end
 
@@ -33,7 +33,7 @@ rule "process achievement"
         salience -5
     when
         pach   : PlayerAchievement( )
-        ach    : Achievement( description == pach.achievement ) from server().loadAchievements()
+        ach    : Achievement( type == pach.type ) from server().loadAchievements()
         player : Player( uuid == pach.uuid, !hasAchievement(ach) )
         na     : AchievementList()
     then

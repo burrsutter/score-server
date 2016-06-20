@@ -77,12 +77,12 @@ public final class ScoreServer {
         }
     }
 
-    public void createAchievement(final String description ) {
-        if (description == null) {
+    public void createAchievement(final String type, final String description ) {
+        if (description == null || type == null ) {
             throw new IllegalArgumentException("Uninitialised achievement");
         }
-        final String uuid = UUID.randomUUID().toString();
-        Achievement a = new Achievement(uuid, description);
+        //final String uuid = UUID.randomUUID().toString();
+        Achievement a = new Achievement(type, description);
 
         new Transaction<Object>(entityManagerReference.get()) {
             @Override

@@ -43,18 +43,36 @@
     <org.drools.workbench.models.guided.dtable.shared.model.BRLActionColumn>
       <hideColumn>false</hideColumn>
       <width>-1</width>
-      <header>Achievement</header>
+      <header>Achievement Type</header>
       <definition>
         <org.drools.workbench.models.datamodel.rule.FreeFormLine>
-          <text>PlayerAchievement pa = new PlayerAchievement( f1.getUuid(), &quot;@{descr}&quot; );
-insert( pa );</text>
+          <text>String type = &quot;@{type}&quot;;</text>
         </org.drools.workbench.models.datamodel.rule.FreeFormLine>
       </definition>
       <childColumns>
         <org.drools.workbench.models.guided.dtable.shared.model.BRLActionVariableColumn>
           <hideColumn>false</hideColumn>
-          <width>319</width>
-          <header>Achievement</header>
+          <width>142</width>
+          <header>Achievement Type</header>
+          <varName>type</varName>
+          <fieldType>Object</fieldType>
+        </org.drools.workbench.models.guided.dtable.shared.model.BRLActionVariableColumn>
+      </childColumns>
+    </org.drools.workbench.models.guided.dtable.shared.model.BRLActionColumn>
+    <org.drools.workbench.models.guided.dtable.shared.model.BRLActionColumn>
+      <hideColumn>false</hideColumn>
+      <width>-1</width>
+      <header>Achievement Description</header>
+      <definition>
+        <org.drools.workbench.models.datamodel.rule.FreeFormLine>
+          <text>insert(  new PlayerAchievement( f1.getUuid(), type, &quot;@{descr}&quot; ) );</text>
+        </org.drools.workbench.models.datamodel.rule.FreeFormLine>
+      </definition>
+      <childColumns>
+        <org.drools.workbench.models.guided.dtable.shared.model.BRLActionVariableColumn>
+          <hideColumn>false</hideColumn>
+          <width>320</width>
+          <header>Achievement Description</header>
           <varName>descr</varName>
           <fieldType>Object</fieldType>
         </org.drools.workbench.models.guided.dtable.shared.model.BRLActionVariableColumn>
@@ -113,6 +131,11 @@ insert( pa );</text>
         <isOtherwise>false</isOtherwise>
       </value>
       <value>
+        <valueString>pops1</valueString>
+        <dataType>STRING</dataType>
+        <isOtherwise>false</isOtherwise>
+      </value>
+      <value>
         <valueString>Splash Expert! 10 in a row!</valueString>
         <dataType>STRING</dataType>
         <isOtherwise>false</isOtherwise>
@@ -134,6 +157,11 @@ insert( pa );</text>
         <valueNumeric class="int">15</valueNumeric>
         <valueString></valueString>
         <dataType>NUMERIC_INTEGER</dataType>
+        <isOtherwise>false</isOtherwise>
+      </value>
+      <value>
+        <valueString>pops2</valueString>
+        <dataType>STRING</dataType>
         <isOtherwise>false</isOtherwise>
       </value>
       <value>

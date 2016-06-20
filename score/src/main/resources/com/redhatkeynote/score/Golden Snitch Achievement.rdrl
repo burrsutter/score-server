@@ -8,7 +8,8 @@ rule "Golden Snitch Achievement"
 		player : Player( goldenSnitch == true )
 	then
 		PlayerAchievement fact0 = new PlayerAchievement();
-		fact0.setUuid( player.uuid );
+		fact0.setUuid( player.getUuid() );
+		fact0.setType( "golden" );
 		fact0.setAchievement( "Golden Snitch" );
 		insert( fact0 );
 end

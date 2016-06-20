@@ -37,9 +37,9 @@ public class AchievementList {
 
     public boolean hasAchievement( Achievement a ) {
         if (a != null) {
-            final String desc = a.getDescription();
+            final String type = a.getType();
             for(Achievement current: achievements) {
-                if (current.getDescription().equals(desc)) {
+                if (current.getType().equals(type)) {
                     return true;
                 }
             }

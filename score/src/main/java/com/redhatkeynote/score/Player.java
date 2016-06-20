@@ -108,9 +108,9 @@ public class Player implements Serializable {
 
     public boolean hasAchievement( Achievement achievement ) {
         if (achievement != null) {
-            final String desc = achievement.getDescription();
+            final String type = achievement.getType();
             for(Achievement current: achievements) {
-                if (current.getDescription().equals(desc)) {
+                if (current.getType().equals(type)) {
                     return true;
                 }
             }
