@@ -66,6 +66,7 @@ public class SummaryRulesTest {
         final int topPlayers = 10;
         final int numTeams = 4;
         final int[] teamScores = new int[numTeams];
+        final int[] teamPlayerCount = new int[numTeams];
         
         final TreeSet<PlayerScore> playerScores = new TreeSet<>();
         final Map<String, Player> players = new HashMap<>();
@@ -79,6 +80,7 @@ public class SummaryRulesTest {
             final String username = "Player " + playerCount;
             
             teamScores[team] += score;
+            teamPlayerCount[team] += 1;
             players.put(uuid, new Player(uuid, username, team, score, 100, true));
             playerScores.add(new PlayerScore(uuid, username, score));
         }
@@ -99,6 +101,7 @@ public class SummaryRulesTest {
         
         for(TeamScore teamScore: retrievedTeamScores) {
             int team = teamScore.getTeam();
+            Assert.assertEquals("Team players should be as expected", teamPlayerCount[team], teamScore.getNumPlayers().intValue());
             Assert.assertEquals("Team score should be as expected", teamScores[team], teamScore.getScore().intValue());
             Assert.assertTrue("Team score should be less than or equal to previous", lastTeamScore >= teamScore.getScore());
             lastTeamScore = teamScore.getScore();

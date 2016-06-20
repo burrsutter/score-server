@@ -7,12 +7,18 @@ public class TeamScore implements Comparable<TeamScore>, Serializable {
 
     private Integer team;
     private Integer score;
+    private Integer numPlayers;
 
     public TeamScore() {}
 
-    public TeamScore(Integer team, Number score) {
+    public TeamScore(Integer team, Number score, Number numPlayers) {
         setTeam(team);
-        setScore(score != null ? score.intValue() : null);
+        if (score != null) {
+            setScore(score.intValue());
+        }
+        if (numPlayers != null) {
+            setNumPlayers(numPlayers.intValue());
+        }
     }
 
     public Integer getTeam() {
@@ -29,6 +35,14 @@ public class TeamScore implements Comparable<TeamScore>, Serializable {
 
     public void setScore(Integer score) {
         this.score = score;
+    }
+
+    public Integer getNumPlayers() {
+        return this.numPlayers;
+    }
+
+    public void setNumPlayers(Integer numPlayers) {
+        this.numPlayers = numPlayers;
     }
 
     @Override
@@ -50,7 +64,11 @@ public class TeamScore implements Comparable<TeamScore>, Serializable {
                 return false;
         } else if (!team.equals(other.team))
             return false;
-        return true;
+        if (numPlayers == null) {
+            return (other.numPlayers == null);
+        } else {
+            return numPlayers.equals(other.numPlayers);
+        }
     }
 
     @Override

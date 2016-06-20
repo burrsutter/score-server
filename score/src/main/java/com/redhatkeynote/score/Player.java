@@ -18,7 +18,7 @@ import javax.persistence.Table;
 @SuppressWarnings("serial")
 @NamedQueries({
     @NamedQuery(name="findPlayerByUuid", query="from Player p where p.uuid = :uuid"),
-    @NamedQuery(name="getTeamScores", query="select new com.redhatkeynote.score.TeamScore(p.team, sum(p.score)) from Player p group by p.team"),
+    @NamedQuery(name="getTeamScores", query="select new com.redhatkeynote.score.TeamScore(p.team, sum(p.score), count(p)) from Player p group by p.team"),
     @NamedQuery(name="getPlayerScores", query="select new com.redhatkeynote.score.PlayerScore(p.uuid, p.username, p.score) from Player p order by p.score desc, p.username asc"),
     @NamedQuery(name="deletePlayers", query="delete from Player p")
 })
