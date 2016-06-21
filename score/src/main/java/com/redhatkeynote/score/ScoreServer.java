@@ -81,14 +81,13 @@ public final class ScoreServer {
         if (description == null || type == null ) {
             throw new IllegalArgumentException("Uninitialised achievement");
         }
-        //final String uuid = UUID.randomUUID().toString();
         Achievement a = new Achievement(type, description);
 
         new Transaction<Object>(entityManagerReference.get()) {
             @Override
             public Object call() throws Exception {
-                TypedQuery<Achievement> query = em().createNamedQuery("findAchievementByDescriptionTeamScores", Achievement.class);
-                query.setParameter("description", description);
+                TypedQuery<Achievement> query = em().createNamedQuery("findAchievementByTypeTeamScores", Achievement.class);
+                query.setParameter("type", type);
                 query.setLockMode(LockModeType.PESSIMISTIC_WRITE);
                 try {
                     query.getSingleResult();
