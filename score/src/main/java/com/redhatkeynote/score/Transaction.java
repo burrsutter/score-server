@@ -1,9 +1,11 @@
 package com.redhatkeynote.score;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.transaction.Status;
 import javax.transaction.UserTransaction;
 
@@ -11,8 +13,8 @@ public abstract class Transaction<T> implements Callable<T> {
 
     private final EntityManager em;
 
-    Transaction(EntityManager em) {
-        this.em = em;
+    Transaction(EntityManagerFactory emf) {
+        this.em = emf.createEntityManager();
     }
 
     protected EntityManager em() {
@@ -24,14 +26,15 @@ public abstract class Transaction<T> implements Callable<T> {
         int status = Status.STATUS_UNKNOWN;
         UserTransaction ut = null;
         try {
-            ut = (UserTransaction)new InitialContext().lookup("java:jboss/UserTransaction");
-            if (ut != null) {
+            ut = (UserTransaction) new InitialContext().lookup( "java:jboss/UserTransaction" );
+            if ( ut != null ) {
                 status = ut.getStatus();
             }
-        } catch (Exception e) {}
+        } catch ( Exception e ) {
+        }
         boolean emt = (status == Status.STATUS_UNKNOWN);
         boolean utt = (status == Status.STATUS_NO_TRANSACTION);
-        if (emt) {
+        if ( emt ) {
             em.getTransaction().begin();
         } else {
             if (utt) {

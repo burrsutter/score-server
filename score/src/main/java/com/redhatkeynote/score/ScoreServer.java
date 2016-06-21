@@ -30,7 +30,7 @@ public final class ScoreServer {
         return SERVER;
     }
 
-    private static final ThreadLocal<EntityManager> entityManagerReference = new ThreadLocal<>();
+    private static final AtomicReference<EntityManagerFactory> entityManagerReference = new AtomicReference<>();
 
     public synchronized ScoreServer init(KieContext kcontext) {
         if ( entityManagerReference.get() == null ) {
@@ -42,11 +42,11 @@ public final class ScoreServer {
                     ClassLoader cl = ((InternalKnowledgeBase) kcontext.getKieRuntime().getKieBase()).getRootClassLoader();
                     Thread.currentThread().setContextClassLoader( cl );
                     emf = Persistence.createEntityManagerFactory( "score" );
+                    entityManagerReference.set( emf );
                 } finally {
                     Thread.currentThread().setContextClassLoader( tccl );
                 }
-                entityManagerReference.set( emf.createEntityManager() );
-            } catch( Throwable t ) {
+            } catch ( Throwable t ) {
                 LOGGER.error( "Error initializing the server:", t );
             }
         }

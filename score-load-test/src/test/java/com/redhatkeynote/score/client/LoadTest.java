@@ -57,7 +57,7 @@ public class LoadTest {
         final ServerInfo SERVER = LOCAL;
         final int PLAYER_COUNT = 16;
         final int TEAM_COUNT = 4;
-        final int REQUESTS_PER_THREAD = 100;
+        final int REQUESTS_PER_THREAD = 1000;
         final int THREADS = 8;
 
         KieServicesConfiguration configuration = KieServicesFactory.newRestConfiguration( SERVER.URL, SERVER.USER, SERVER.PASSWORD );
