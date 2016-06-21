@@ -30,28 +30,24 @@ public final class ScoreServer {
         return SERVER;
     }
 
-    private AtomicReference<EntityManager> entityManagerReference = new AtomicReference<>();
+    private static final ThreadLocal<EntityManager> entityManagerReference = new ThreadLocal<>();
 
     public synchronized ScoreServer init(KieContext kcontext) {
-        if (entityManagerReference.get() == null) {
-            synchronized(this) {
-                if (entityManagerReference.get() == null) {
-                    try {
-                        EntityManagerFactory emf;
-                        final ClassLoader tccl = Thread.currentThread().getContextClassLoader();
-                        try {
-                            // https://issues.jboss.org/browse/DROOLS-1108
-                            ClassLoader cl = ((InternalKnowledgeBase) kcontext.getKieRuntime().getKieBase()).getRootClassLoader();
-                            Thread.currentThread().setContextClassLoader( cl );
-                            emf = Persistence.createEntityManagerFactory("score");
-                        } finally {
-                            Thread.currentThread().setContextClassLoader(tccl);
-                        }
-                        entityManagerReference.compareAndSet(null, emf.createEntityManager());
-                    } catch( Throwable t ) {
-                        LOGGER.error( "Error initializing the server:", t );
-                    }
+        if ( entityManagerReference.get() == null ) {
+            try {
+                EntityManagerFactory emf;
+                final ClassLoader tccl = Thread.currentThread().getContextClassLoader();
+                try {
+                    // https://issues.jboss.org/browse/DROOLS-1108
+                    ClassLoader cl = ((InternalKnowledgeBase) kcontext.getKieRuntime().getKieBase()).getRootClassLoader();
+                    Thread.currentThread().setContextClassLoader( cl );
+                    emf = Persistence.createEntityManagerFactory( "score" );
+                } finally {
+                    Thread.currentThread().setContextClassLoader( tccl );
                 }
+                entityManagerReference.set( emf.createEntityManager() );
+            } catch( Throwable t ) {
+                LOGGER.error( "Error initializing the server:", t );
             }
         }
         return this;
@@ -119,6 +115,7 @@ public final class ScoreServer {
                     if (p.getScore() != null) player.setScore(p.getScore());
                     if (p.getConsecutivePops() != null) player.setConsecutivePops(p.getConsecutivePops());
                     if (p.getGoldenSnitch() != null) player.setGoldenSnitch(p.getGoldenSnitch());
+                    em().merge( player );
                 } catch (NoResultException e) {
                     player = p;
                     em().persist( player );
