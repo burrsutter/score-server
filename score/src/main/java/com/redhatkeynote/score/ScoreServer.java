@@ -102,11 +102,21 @@ public final class ScoreServer {
         if (uuid == null) {
             throw new IllegalArgumentException("unidentified player");
         }
+        try {
+            return getOrCreatePlayer( p, uuid );
+        } catch( Throwable t ) {
+            // there was possibly a concurrent creation, so try again
+            return getOrCreatePlayer( p, uuid );
+        }
+    }
+
+    private Player getOrCreatePlayer(Player p, String uuid) {
         return new Transaction<Player>(entityManagerReference.get()) {
             @Override
             public Player call() throws Exception {
-                TypedQuery<Player> query = em().createNamedQuery("findPlayerByUuid", Player.class);
+                TypedQuery<Player> query = em().createNamedQuery("findPlayerByUuid", Player.class );
                 query.setParameter("uuid", uuid);
+                query.setLockMode( LockModeType.PESSIMISTIC_WRITE );
                 Player player;
                 try {
                     player = query.getSingleResult();
@@ -122,15 +132,18 @@ public final class ScoreServer {
                 }
                 return player;
             }
+
         }.transact();
     }
 
-//    // TODO: respect game status
     public Player savePlayer(Player p) {
         return new Transaction<Player>(entityManagerReference.get()) {
             @Override
             public Player call() throws Exception {
-                return em().merge(p);
+                Player player = em().find( Player.class, p.getId(), LockModeType.PESSIMISTIC_WRITE );
+                player.getAchievements().addAll( p.getAchievements() );
+                em().merge( player );
+                return player;
             }
         }.transact();
     }

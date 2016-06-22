@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -55,9 +56,9 @@ public class LoadTest {
     public void testGame()
             throws Exception {
         final ServerInfo SERVER = LOCAL;
-        final int PLAYER_COUNT = 16;
+        final int PLAYER_COUNT = 4;
         final int TEAM_COUNT = 4;
-        final int REQUESTS_PER_THREAD = 1000;
+        final int REQUESTS_PER_THREAD = 10000;
         final int THREADS = 8;
 
         KieServicesConfiguration configuration = KieServicesFactory.newRestConfiguration( SERVER.URL, SERVER.USER, SERVER.PASSWORD );
@@ -66,25 +67,30 @@ public class LoadTest {
         configuration.addJaxbClasses( extraClasses );
         KieServicesClient kc = KieServicesFactory.newKieServicesClient( configuration );
         RuleServicesClient rules = kc.getServicesClient( RuleServicesClient.class );
-        //final JSONMarshaller json = new JSONMarshaller( extraClasses, LoadTest.class.getClassLoader() );
 
         KieCommands cmd = KieServices.Factory.get().getCommands();
         Callable<Void>[] tasks = new Callable[THREADS];
+        final AtomicInteger errors = new AtomicInteger( 0 );
         for( int t = 0; t < THREADS; t++ ) {
             final int task_index = t;
             tasks[t] = () -> {
+                final JSONMarshaller json = new JSONMarshaller( extraClasses, LoadTest.class.getClassLoader() );
                 Command[] base = new Command[3];
                 base[1] = cmd.newInsert( new AchievementList(), "newAchievements" );
                 base[2] = cmd.newFireAllRules();
 
                 for ( int i = 0; i < REQUESTS_PER_THREAD; i++ ) {
-//                    int player = ((i*THREADS)+task_index)%PLAYER_COUNT;
-                    int player = task_index;
+                    int player = ((i*THREADS)+task_index)%PLAYER_COUNT;
+//                    int player = task_index;
                     int team = player%TEAM_COUNT;
-                    base[0] = cmd.newInsert( new Player( "ppp" + player, "John Doe", team, i, i % 15, player % 2 == 0 ) );
+                    base[0] = cmd.newInsert( new Player( "foo" + player, "John Doe", team, i, i % 15, player % 2 == 0 ) );
 
                     Command batch = cmd.newBatchExecution( Arrays.asList( base ), "ScoreSession" );
                     ServiceResponse<ExecutionResults> results = rules.executeCommandsWithResults( SERVER.CONTAINER, batch );
+                    if( results.getType().equals( ServiceResponse.ResponseType.FAILURE ) ) {
+                        System.err.format("ERROR detected in task %d. Total of %d errors. ", task_index, errors.incrementAndGet());
+                        System.err.println(json.marshall( results ) );
+                    }
                     //System.out.println( json.marshall( results ) );
                 }
                 return null;
