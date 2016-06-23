@@ -5,8 +5,12 @@ import com.redhatkeynote.score.AchievementList;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -47,6 +51,7 @@ public class LoadTest {
 
     public static void main( String[] args )
             throws Exception {
+
         Options options = new Options();
         options.addOption( Option.builder("server").hasArg().desc( "score server host URL (required)" ).build() );
         options.addOption( Option.builder( "user" ).hasArg().desc( "score server username (default: kieserver)" ).build() );
@@ -75,18 +80,6 @@ public class LoadTest {
         int reqs = cli.hasOption( "reqs" ) ? Integer.parseInt( cli.getOptionValue( "reqs" ) ) : 1000;
         String prefix  = cli.hasOption( "prefix" ) ? cli.getOptionValue( "prefix" ) : UUID.randomUUID().toString().substring( 0, 5 )+"_";
 
-        System.out.println("--------------------------------------------------------------");
-        System.out.format( "  Executing load test with the following parameters:\n" );
-        System.out.format( "    server   = %s\n", serverUrl );
-        System.out.format( "    username = %s\n", username );
-        System.out.format( "    password = %s\n", password );
-        System.out.format( "    kiecont  = %s\n", kiecont );
-        System.out.format( "    players  = %d\n", players );
-        System.out.format( "    threads  = %d\n", threads );
-        System.out.format( "    reqs     = %d\n", reqs );
-        System.out.format( "    prefix   = %s\n", prefix );
-        System.out.println( "--------------------------------------------------------------\n" );
-
         executeLoadTest(
                 serverUrl,
                 username,
@@ -98,9 +91,25 @@ public class LoadTest {
                 prefix );
     }
 
+    private static void printReport(String serverUrl, String username, String password, String kiecont, int players, int threads, int reqs, String prefix) {
+        System.out.println("--------------------------------------------------------------");
+        System.out.format( "  Load test with the following parameters:\n" );
+        System.out.format( "    server   = %s\n", serverUrl );
+        System.out.format( "    username = %s\n", username );
+        System.out.format( "    password = %s\n", password );
+        System.out.format( "    kiecont  = %s\n", kiecont );
+        System.out.format( "    players  = %d\n", players );
+        System.out.format( "    threads  = %d\n", threads );
+        System.out.format( "    reqs     = %d\n", reqs );
+        System.out.format( "    prefix   = %s\n", prefix );
+        System.out.println( "--------------------------------------------------------------\n" );
+    }
+
     private static void executeLoadTest(String serverUrl, String username, String password, String kiecont, int players, int threads, int reqs, String prefix)
             throws InterruptedException, java.util.concurrent.ExecutionException {
         final int TEAM_COUNT = 4;
+
+        printReport( serverUrl, username, password, kiecont, players, threads, reqs, prefix );
 
         KieServicesConfiguration configuration = KieServicesFactory.newRestConfiguration( serverUrl, username, password );
         configuration.setMarshallingFormat( MarshallingFormat.JSON );
@@ -137,7 +146,7 @@ public class LoadTest {
                         }
                         //System.out.println( json.marshall( results ) );
                     } catch ( Exception e ) {
-                        System.out.format( "EXCEPTION detected on task(%d): %s\n", task_index, e.getMessage() );
+                        System.out.format( "EXCEPTION(%d) detected on task(%d): %s\n", errors.incrementAndGet(), task_index, e.getMessage() );
                         e.printStackTrace();
                     }
                 }
@@ -161,7 +170,17 @@ public class LoadTest {
         long millis = Duration.between( start, end ).toMillis();
         long totalRequests = reqs*threads;
         double throughput = ((double)totalRequests) / ((double) millis / 1000.0);
-        System.out.format( "\n\nTime spent = %d, total requests = %d, throughput = %4.2f requests/second\n", millis, totalRequests, throughput );
+
+        DateTimeFormatter formatter =
+                DateTimeFormatter.ofLocalizedDateTime( FormatStyle.MEDIUM )
+                        .withLocale( Locale.CANADA )
+                        .withZone( ZoneId.systemDefault() );
+
+        System.out.println("\n");
+        printReport( serverUrl, username, password, kiecont, players, threads, reqs, prefix );
+        System.out.format( "Start  = %s\nFinish = %s\n", formatter.format( start ), formatter.format( end ) );
+        System.out.format( "Time spent = %d ms, total requests = %d, throughput = %4.2f requests/second\n", millis, totalRequests, throughput );
+        System.out.format( "Total errors = %d\n", errors.get() );
     }
 
 }
