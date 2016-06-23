@@ -120,11 +120,14 @@ public final class ScoreServer {
                 Player player;
                 try {
                     player = query.getSingleResult();
-                    if (p.getUsername() != null) player.setUsername(p.getUsername());
-                    if (p.getTeam() != null) player.setTeam(p.getTeam());
-                    if (p.getScore() != null) player.setScore(p.getScore());
-                    if (p.getConsecutivePops() != null) player.setConsecutivePops(p.getConsecutivePops());
-                    if (p.getGoldenSnitch() != null) player.setGoldenSnitch(p.getGoldenSnitch());
+                    if (p.getUsername() != null) player.setUsername( p.getUsername() );
+                    if (p.getTeam() != null) player.setTeam( p.getTeam() );
+                    if (p.getScore() != null) player.setScore( Math.max( p.getScore(),
+                                                                         player.getScore() != null ? player.getScore() : 0 ) );
+                    if (p.getConsecutivePops() != null) player.setConsecutivePops( Math.max( p.getConsecutivePops(),
+                                                                                             player.getConsecutivePops() != null ? player.getConsecutivePops() : 0 ) );
+                    if (p.getGoldenSnitch() != null) player.setGoldenSnitch( p.getGoldenSnitch() ||
+                                                                             ( player.getGoldenSnitch() != null && player.getGoldenSnitch() ) );
                     em().merge( player );
                 } catch (NoResultException e) {
                     player = p;
