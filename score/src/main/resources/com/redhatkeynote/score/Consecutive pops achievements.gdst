@@ -120,6 +120,35 @@
         <isOtherwise>false</isOtherwise>
       </value>
       <value>
+        <valueString>Splash Apprentice</valueString>
+        <dataType>STRING</dataType>
+        <isOtherwise>false</isOtherwise>
+      </value>
+      <value>
+        <valueNumeric class="int">3</valueNumeric>
+        <valueString></valueString>
+        <dataType>NUMERIC_INTEGER</dataType>
+        <isOtherwise>false</isOtherwise>
+      </value>
+      <value>
+        <valueString>pops3</valueString>
+        <dataType>STRING</dataType>
+        <isOtherwise>false</isOtherwise>
+      </value>
+      <value>
+        <valueString>Splash Apprentice! 3 in a row!</valueString>
+        <dataType>STRING</dataType>
+        <isOtherwise>false</isOtherwise>
+      </value>
+    </list>
+    <list>
+      <value>
+        <valueNumeric class="int">2</valueNumeric>
+        <valueString></valueString>
+        <dataType>NUMERIC_INTEGER</dataType>
+        <isOtherwise>false</isOtherwise>
+      </value>
+      <value>
         <valueString>Splash Expert</valueString>
         <dataType>STRING</dataType>
         <isOtherwise>false</isOtherwise>
@@ -143,7 +172,7 @@
     </list>
     <list>
       <value>
-        <valueNumeric class="int">2</valueNumeric>
+        <valueNumeric class="int">3</valueNumeric>
         <valueString></valueString>
         <dataType>NUMERIC_INTEGER</dataType>
         <isOtherwise>false</isOtherwise>
