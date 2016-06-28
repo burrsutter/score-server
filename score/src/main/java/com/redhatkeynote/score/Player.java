@@ -12,10 +12,10 @@ import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import org.hibernate.annotations.Index;
+import javax.persistence.Index;
 
 @Entity
-@Table(name="player")
+@Table(name="player", indexes = {@Index(name="scoreUsernameIndex", columnList="score,username")})
 @SuppressWarnings("serial")
 @NamedQueries({
     @NamedQuery(name="findPlayerByUuid", query="from Player p where p.uuid = :uuid"),
