@@ -12,10 +12,9 @@ import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.Index;
 
 @Entity
-@Table(name="player", indexes = {@Index(name="scoreUsernameIndex", columnList="score,username")})
+@Table(name="player")
 @SuppressWarnings("serial")
 @NamedQueries({
     @NamedQuery(name="findPlayerByUuid", query="from Player p where p.uuid = :uuid"),
@@ -31,7 +30,6 @@ public class Player implements Serializable {
     private Integer id;
 
     @Column(name = "uuid", unique = true)
-    @Index(name="uuidIndex")
     private String uuid;
 
     @Column(name = "username")//, unique=true)
