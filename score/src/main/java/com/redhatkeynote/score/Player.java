@@ -12,6 +12,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import org.hibernate.annotations.Index;
 
 @Entity
 @Table(name="player")
@@ -30,6 +31,7 @@ public class Player implements Serializable {
     private Integer id;
 
     @Column(name = "uuid", unique = true)
+    @Index(name="uuidIndex")
     private String uuid;
 
     @Column(name = "username")//, unique=true)
